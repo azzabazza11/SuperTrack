@@ -1,0 +1,19 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#009688" /> <!-- Circle background color -->
+        </shape>
+    </item>
+    <item android:left="8dp" android:right="8dp" android:top="8dp" android:bottom="8dp">
+        <shape android:shape="line">
+            <size android:width="2dp" />
+            <stroke android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <item android:left="8dp" android:right="8dp" android:top="8dp" android:bottom="8dp">
+        <shape android:shape="line">
+            <size android:height="2dp" />
+            <stroke android:color="#000000" />
+        </shape>
+    </item>
+</layer-list>

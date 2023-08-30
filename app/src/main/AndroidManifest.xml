@@ -10,7 +10,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyTutoMusicApp">
-        <activity android:name=".MusicPlayerActivity"></activity>
+        <activity android:name=".MusicPlayerActivity"
+            android:theme="@style/Theme.AppCompat.Light"></activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

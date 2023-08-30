@@ -1,3 +1,6 @@
 <resources>
-    <string name="app_name">EasyTutoMusicApp</string>
+    <string name="app_name">SuperTrack</string>
+    <string name="delete_button_description">Remove Track</string>
+    <string name="submit">Blah</string>
+    <string name="extended_fab_label">Track</string>
 </resources>

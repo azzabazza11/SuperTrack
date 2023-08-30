@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
     <TextView
@@ -11,7 +12,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/songs_text"
         android:textColor="@color/black"
-        android:text="SONGS"
+        android:text="AUDIO TRACKS"
         android:textSize="20dp"
         android:textStyle="bold"
         android:padding="10dp"
@@ -30,6 +31,42 @@
         android:layout_height="wrap_content"
         android:id="@+id/recycler_view"
         android:layout_below="@id/songs_text"/>
+
+
+
+
+    <!--<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/selectTracksButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:background="@color/warmgreen"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|right"
+        android:onClick="openFilePicker"
+        android:contentDescription="@string/submit"
+        android:text="@string/extended_fab_label"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        app:icon="@drawable/ic_my_icon"/>-->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/selectTracksButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:layout_gravity="bottom|right"
+        android:onClick="openFilePicker"
+        android:contentDescription="@string/submit"
+        android:text="@string/extended_fab_label"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        app:icon="@drawable/ic_my_icon"/>
+
+
+
 
 
 

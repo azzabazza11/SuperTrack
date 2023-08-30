@@ -1,8 +1,12 @@
 package com.example.easytutomusicapp;
 
-import java.io.Serializable;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.Log;
 
-public class AudioModel implements Serializable {
+
+
+public class AudioModel implements Parcelable {
     String path;
     String title;
     String duration;
@@ -11,8 +15,26 @@ public class AudioModel implements Serializable {
         this.path = path;
         this.title = title;
         this.duration = duration;
+        Log.i("AudioModel","constr");
+    }
+    // Parcelable constructor
+    protected AudioModel(Parcel in) {
+        path = in.readString();
+        title = in.readString();
+        duration = in.readString();
     }
 
+    public static final Creator<AudioModel> CREATOR = new Creator<AudioModel>() {
+        @Override
+        public AudioModel createFromParcel(Parcel in) {
+            return new AudioModel(in);
+        }
+
+        @Override
+        public AudioModel[] newArray(int size) {
+            return new AudioModel[size];
+        }
+    };
     public String getPath() {
         return path;
     }
@@ -35,5 +57,17 @@ public class AudioModel implements Serializable {
 
     public void setDuration(String duration) {
         this.duration = duration;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(path);
+        dest.writeString(title);
+        dest.writeString(duration);
     }
 }

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F50057"
+    android:background="@color/warmred"
     tools:context=".MusicPlayerActivity">
 
     <TextView
@@ -37,11 +37,14 @@
         android:padding="40dp">
 
         <SeekBar
+            android:id="@+id/seek_bar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/seek_bar"
-            android:layout_margin="10dp"
-            android:backgroundTint="@color/white"/>
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/white" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -50,6 +53,15 @@
             android:layout_below="@id/seek_bar"
             android:text="0:00"
             android:layout_alignParentStart="true"
+            android:textColor="@color/white"
+            android:layout_margin="20dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/CountDownTv"
+            android:layout_below="@id/seek_bar"
+            android:text="0:00"
+            android:layout_centerHorizontal="true"
             android:textColor="@color/white"
             android:layout_margin="20dp"/>
         <TextView
