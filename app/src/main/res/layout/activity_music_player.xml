@@ -19,15 +19,21 @@
         android:layout_margin="20dp"
         android:padding="20dp"
         />
+    <SurfaceView
+        android:id="@+id/backgroundSurfaceView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <ImageView
-        android:layout_width="240dp"
-        android:layout_height="240dp"
         android:id="@+id/music_icon_big"
-        android:layout_centerHorizontal="true"
-        android:padding="20dp"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
         android:layout_above="@id/controls"
-        android:src="@drawable/music_icon_big"/>
+        android:layout_centerHorizontal="true"
+        android:cropToPadding="true"
+
+        android:padding="-100dp"
+        android:src="@drawable/music_icon_big" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -55,15 +61,32 @@
             android:layout_alignParentStart="true"
             android:textColor="@color/white"
             android:layout_margin="20dp"/>
+
         <TextView
+            android:id="@+id/CountDownTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/CountDownTv"
             android:layout_below="@id/seek_bar"
-            android:text="0:00"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/white"
-            android:layout_margin="20dp"/>
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="0dp"
+            android:text="0:00"
+            android:textColor="@color/white" />
+        <TextView
+            android:id="@+id/CountDownTv2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/CountDownTv"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:text="0:00"
+            android:visibility="invisible"
+            android:textColor="@color/white" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

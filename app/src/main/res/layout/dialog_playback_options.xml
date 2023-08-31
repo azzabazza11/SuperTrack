@@ -5,114 +5,124 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/dialogLayout"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#fcba03"
-        app:layout_constrainedHeight="false"
-        app:layout_constrainedWidth="false"
+        android:layout_height="wrap_content"
+        android:layout_margin="0dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp">
 
-        <!-- Inside dialog_playback_options.xml -->
-
-
-        <RadioGroup
-            android:id="@+id/radio_group"
-            android:layout_width="312dp"
-            android:layout_height="229dp"
-            android:layout_below="@id/dialog_title"
-            android:layout_centerHorizontal="true"
-
-            android:layout_marginTop="16dp"
-            android:orientation="vertical"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/dialogLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            app:layout_constrainedHeight="false"
+            app:layout_constrainedWidth="false"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dialog_title">
+            app:layout_constraintTop_toTopOf="parent">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintOptions"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:baselineAligned="false"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/Tv_stop_later"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:scaleX="2"
-                    android:scaleY="2"
-                    android:text="End Time"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:layout_conversion_absoluteHeight="32dp"
-                    tools:layout_conversion_absoluteWidth="142dp" />
-
-                <TextView
-                    android:id="@+id/Tv_start_later"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-
-                    android:scaleX="2"
-                    android:scaleY="2"
-                    android:text="Start time"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/Tv_start_now"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/Tv_stop_later"
-                    tools:layout_conversion_absoluteHeight="40dp"
-                    tools:layout_conversion_absoluteWidth="146dp" />
-
-                <TextView
-                    android:id="@+id/Tv_start_now"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="30dp"
-                    android:scaleX="2"
-                    android:scaleY="2"
-                    android:text="Play Now"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    tools:layout_conversion_absoluteHeight="40dp"
-                    tools:layout_conversion_absoluteWidth="91dp" />
-
-                <androidx.constraintlayout.widget.Guideline
-                    android:id="@+id/guideline2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layout_constraintGuide_begin="81dp" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-        </RadioGroup>
-
-        <TextView
-            android:id="@+id/dialog_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="false"
-            android:layout_marginTop="16dp"
-            android:text="Track Options"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            android:textColor="@color/coffee"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <!-- Inside dialog_playback_options.xml -->
 
 
-        <!-- Additional views for specifying times, such as TimePicker or EditText, can be added here -->
+            <RadioGroup
+                android:id="@+id/radio_group"
+                android:layout_width="312dp"
+                android:layout_height="229dp"
+                android:layout_below="@id/dialog_title"
+                android:layout_centerHorizontal="true"
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dialog_title">
 
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintOptions"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:baselineAligned="false"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/Tv_stop_later"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:scaleX="2"
+                        android:scaleY="2"
+                        android:text="Set End Time"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:layout_conversion_absoluteHeight="32dp"
+                        tools:layout_conversion_absoluteWidth="142dp" />
+
+                    <TextView
+                        android:id="@+id/Tv_start_later"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+
+                        android:scaleX="2"
+                        android:scaleY="2"
+                        android:text="Set Start time"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toTopOf="@+id/Tv_start_now"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/Tv_stop_later"
+                        tools:layout_conversion_absoluteHeight="40dp"
+                        tools:layout_conversion_absoluteWidth="146dp" />
+
+                    <TextView
+                        android:id="@+id/Tv_start_now"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="30dp"
+                        android:scaleX="2"
+                        android:scaleY="2"
+                        android:text="Play Now"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        tools:layout_conversion_absoluteHeight="40dp"
+                        tools:layout_conversion_absoluteWidth="91dp" />
+
+                    <androidx.constraintlayout.widget.Guideline
+                        android:id="@+id/guideline2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        app:layout_constraintGuide_begin="81dp" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/dialog_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="false"
+                android:layout_marginTop="16dp"
+                android:text="Track Options"
+                android:textColor="@color/coffee"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <!-- Additional views for specifying times, such as TimePicker or EditText, can be added here -->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

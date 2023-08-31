@@ -81,7 +81,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
             holder.titleTextView.setText(songData.getTitle());
             holder.durationTv.setText(holder.convertToMMSS(Long.parseLong(songData.getDuration())));
 
-            String truncatedTitle = truncateTitle(songData.getTitle(), 15);
+            String truncatedTitle = truncateTitle(songData.getTitle(), 35);
 
             holder.titleTextView.setText(truncatedTitle);
 
@@ -199,7 +199,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
               long seconds = TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1);
 
               if (hours > 0) {
-                  return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+                  return String.format("%2d:%02d:%02d", hours, minutes, seconds);
               } else {
                   return String.format("%2d:%02d", minutes, seconds);
               }
