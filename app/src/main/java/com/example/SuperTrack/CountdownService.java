@@ -1,4 +1,4 @@
-package com.example.easytutomusicapp;
+package com.example.SuperTrack;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -15,6 +15,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import com.example.SuperTrack.R;
 
 import java.util.concurrent.TimeUnit;
 
@@ -57,7 +59,7 @@ public void NotificationSetup(long remainingMillis){
     builder = new NotificationCompat.Builder(this, "countdown_channel")
             .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentTitle("Countdown")
-            .setContentText("Playback will start in: " + convertToMMSS(String.valueOf(remainingMillis)))
+            .setContentText("Playback begins: " + convertToMMSS(String.valueOf(remainingMillis)))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
     notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

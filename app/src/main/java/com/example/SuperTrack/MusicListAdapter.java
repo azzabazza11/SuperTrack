@@ -1,4 +1,4 @@
-package com.example.easytutomusicapp;
+package com.example.SuperTrack;
 
 import android.content.Context;
 import android.content.Intent;
@@ -15,12 +15,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+
 
 public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.ViewHolder>{
 

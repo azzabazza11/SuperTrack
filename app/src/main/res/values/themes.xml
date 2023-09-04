@@ -17,6 +17,7 @@
 
     <style name="Theme.AlertDialog" parent="Theme.MaterialComponents.Dialog">
         <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Dialog</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
     </style>
 
 </resources>

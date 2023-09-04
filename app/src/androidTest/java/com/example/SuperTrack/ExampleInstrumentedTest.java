@@ -1,4 +1,4 @@
-package com.example.easytutomusicapp;
+package com.example.SuperTrack;
 
 import android.content.Context;
 

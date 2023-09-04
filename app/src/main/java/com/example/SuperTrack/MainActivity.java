@@ -1,4 +1,4 @@
-package com.example.easytutomusicapp;
+package com.example.SuperTrack;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 
 import android.Manifest;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +24,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.reflect.Type;
+
+import com.example.SuperTrack.R;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
@@ -246,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
         setupRecyclerView();
 
     }
-    private void processSelectedUris(ArrayList<Uri> selectedUris) {
+    /*private void processSelectedUris(ArrayList<Uri> selectedUris) {
         for (Uri uri : selectedUris) {
             String title = getAudioTitleFromUri(uri);
             String path = getPathFromUri(uri);
@@ -258,11 +262,44 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
 
         if (songsList.size() > 0) {
             noMusicTextView.setVisibility(View.GONE);
-            /*recyclerView.setAdapter(new MusicListAdapter(songsList, getApplicationContext(),this));*/
+            *//*recyclerView.setAdapter(new MusicListAdapter(songsList, getApplicationContext(),this));*//*
             populateSongsList(recyclerView);
         } else {
             noMusicTextView.setVisibility(View.VISIBLE);
         }
+    }*/
+    private void processSelectedUris(ArrayList<Uri> selectedUris) {
+        for (Uri uri : selectedUris) {
+            if (isFolder(uri)) {
+                // Handle selected folder
+                handleSelectedFolder(uri);
+            } else {
+                // Handle selected file
+                handleSelectedFile(uri);
+            }
+        }
+    }
+
+    private boolean isFolder(Uri uri) {
+        // Check if the selected Uri represents a folder
+        String mimeType = getContentResolver().getType(uri);
+        return DocumentsContract.Document.MIME_TYPE_DIR.equals(mimeType);
+    }
+
+    private void handleSelectedFolder(Uri folderUri) {
+        // Handle the selected folder, e.g., scan its contents for audio files
+        // Update the songsList and RecyclerView as needed
+    }
+
+    private void handleSelectedFile(Uri uri) {
+        // Handle the selected file, e.g., add it to the songsList
+        // Update the songsList and RecyclerView as needed
+        String title = getAudioTitleFromUri(uri);
+        String path = getPathFromUri(uri);
+        long duration = getAudioDurationFromUri(uri); // Retrieve duration for each Uri
+
+        AudioModel audioModel = new AudioModel(path, title, String.valueOf(duration));
+        songsList.add(audioModel);
     }
 
 

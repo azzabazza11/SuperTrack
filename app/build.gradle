@@ -7,7 +7,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.example.easytutomusicapp"
+        applicationId "com.example.SuperTrack"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
@@ -39,4 +39,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+    
 }

@@ -9,7 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="warmburgundy">#A2332B</color>
     <color name="yellow">#f7df57</color>
-
+    <color name="colorBackground">#fafafa</color>
     <color name="coffee">#87846f</color>
     <color name="colorPrimary">#3F51B5</color> <!-- Modify the colorPrimary value -->
     <color name="colorPrimaryDark">#303F9F</color> <!-- Modify the colorPrimaryDark value -->

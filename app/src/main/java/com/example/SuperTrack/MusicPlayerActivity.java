@@ -1,14 +1,12 @@
-package com.example.easytutomusicapp;
+package com.example.SuperTrack;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
+
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.PropertyValuesHolder;
-import android.app.Notification;
+import android.animation.ValueAnimator;
 
 import android.app.TimePickerDialog;
 import android.content.BroadcastReceiver;
@@ -19,6 +17,7 @@ import android.graphics.Matrix;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.PowerManager;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -39,12 +38,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.gif.GifDrawable;
+
 public class MusicPlayerActivity extends AppCompatActivity {
 
     TextView titleTv, currentTimeTv, totalTimeTv, countDownTv, countDownTv2;
@@ -66,6 +64,9 @@ public class MusicPlayerActivity extends AppCompatActivity {
     private Calendar selectedStartTimeCal = Calendar.getInstance();
 
     boolean isCountingdown, isStartingLater;
+
+    private PowerManager.WakeLock wakeLock;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,31 +94,13 @@ public class MusicPlayerActivity extends AppCompatActivity {
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         registerReceiver(screenStateReceiver, filter);
 
+        //wakelock
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "YourApp:WakeLockTag");
         // Calculate the delay time for countdown
         // Close the dialog
         // Set up the countdown on the MusicPlayerActivity
-        TimePickerDialog.OnTimeSetListener endTimeSetListener = new TimePickerDialog.OnTimeSetListener() {
-            @Override
-            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                Log.i("MusicPlayerActivity", "endTimeSetListenerOntimesET");
 
-                selectedEndTimeCal.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                selectedEndTimeCal.set(Calendar.MINUTE, minute);
-
-                // Calculate the delay time for countdown
-                long endTimeMillis = selectedEndTimeCal.getTimeInMillis();
-                long delayMillis = endTimeMillis - System.currentTimeMillis() - Long.parseLong(currentSong.getDuration());
-
-                alertDialog.dismiss(); // Close the dialog
-
-                // Set up the countdown on the MusicPlayerActivity
-                countDownTv.setVisibility(View.VISIBLE);
-                countDownTv2.setVisibility(View.INVISIBLE);
-
-                isStartingLater = false;
-                commenceCountdown(delayMillis);
-            }
-        };
 
 
         ShowOptionsDialoge();
@@ -150,7 +133,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
                         matrix.postTranslate(offsetX, offsetY); // Apply translation to center the image and Set the offset to crop from the bottom
 
                         imageView.setImageMatrix(matrix);
-                        imageView.setRotation(x++);
+                        //imageView.setRotation(x++);
                         // Apply enlargement and shrinking animation
 
 
@@ -191,103 +174,21 @@ public class MusicPlayerActivity extends AppCompatActivity {
 private void setupAnimation(){
 // Get the ImageView you want to animate
     ImageView imageView = findViewById(R.id.music_icon_big);
-/*
-// Create a sequence of scaling animators
-    List<Animator> animators = new ArrayList<>();
 
-// Add scaling animations with different scales and durations
-    PropertyValuesHolder scaleX = PropertyValuesHolder.ofFloat(View.SCALE_X, 2.0f);
-    PropertyValuesHolder scaleY = PropertyValuesHolder.ofFloat(View.SCALE_Y, 2.0f);
-    ObjectAnimator scaleAnimator1 = ObjectAnimator.ofPropertyValuesHolder(imageView, scaleX, scaleY);
-    scaleAnimator1.setDuration(10000);
-    animators.add(scaleAnimator1);
+    ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(imageView, "scaleX", 1.0f, 1.5f);
+    scaleXAnimator.setDuration(7000); // Set the duration in milliseconds
+    scaleXAnimator.setRepeatCount(ValueAnimator.INFINITE); // Set the number of times to repeat (1 time)
+    scaleXAnimator.setRepeatMode(ValueAnimator.REVERSE); // Reverse the animation after each cycle
 
-    PropertyValuesHolder scaleX2 = PropertyValuesHolder.ofFloat(View.SCALE_X, 4.0f);
-    PropertyValuesHolder scaleY2 = PropertyValuesHolder.ofFloat(View.SCALE_Y, 4.0f);
-    ObjectAnimator scaleAnimator2 = ObjectAnimator.ofPropertyValuesHolder(imageView, scaleX2, scaleY2);
-    scaleAnimator2.setDuration(22000);
-    animators.add(scaleAnimator2);
+    ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(imageView, "scaleY", 1.0f, 1.5f);
+    scaleYAnimator.setDuration(7000); // Set the duration in milliseconds
+    scaleYAnimator.setRepeatCount(ValueAnimator.INFINITE); // Set the number of times to repeat (1 time)
+    scaleYAnimator.setRepeatMode(ValueAnimator.REVERSE); // Reverse the animation after each cycle
 
-    PropertyValuesHolder scaleX3 = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.0f);
-    PropertyValuesHolder scaleY3 = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.0f);
-    ObjectAnimator scaleAnimator3 = ObjectAnimator.ofPropertyValuesHolder(imageView, scaleX3, scaleY3);
-    scaleAnimator3.setDuration(22000);
-    animators.add(scaleAnimator3);
-
-    PropertyValuesHolder scaleX4 = PropertyValuesHolder.ofFloat(View.SCALE_X, 0.50f);
-    PropertyValuesHolder scaleY4 = PropertyValuesHolder.ofFloat(View.SCALE_Y, 0.5f);
-    ObjectAnimator scaleAnimator4 = ObjectAnimator.ofPropertyValuesHolder(imageView, scaleX4, scaleY4);
-    scaleAnimator4.setDuration(22000);
-    animators.add(scaleAnimator4);
-
-    PropertyValuesHolder scaleX5 = PropertyValuesHolder.ofFloat(View.SCALE_X, 1.50f);
-    PropertyValuesHolder scaleY5 = PropertyValuesHolder.ofFloat(View.SCALE_Y, 1.5f);
-    ObjectAnimator scaleAnimator5 = ObjectAnimator.ofPropertyValuesHolder(imageView, scaleX5, scaleY5);
-    scaleAnimator5.setDuration(22000);
-    animators.add(scaleAnimator5);
-
-// Create a sequence of animators
     AnimatorSet animatorSet = new AnimatorSet();
-    animatorSet.playSequentially(animators);
-    */
+    animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
 
-
-// Create scale animation
-    ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(imageView, "scaleX", 1.0f, 5.0f);
-    scaleXAnimator.setDuration(10000); // Set the duration in milliseconds
-
-    ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(imageView, "scaleY", 1.0f, 5.0f);
-    scaleYAnimator.setDuration(10000); // Set the duration in milliseconds
-
-// Create translation animation
-    ObjectAnimator translationXAnimator = ObjectAnimator.ofFloat(imageView, "translationX", -300, 300);
-    translationXAnimator.setDuration(10000); // Set the duration in milliseconds
-
-    ObjectAnimator translationYAnimator = ObjectAnimator.ofFloat(imageView, "translationY", 0, 200);
-    translationYAnimator.setDuration(10000); // Set the duration in milliseconds
-
-    // Create scale animation
-    ObjectAnimator scaleXAnimator2 = ObjectAnimator.ofFloat(imageView, "scaleX", 5.0f, 1.0f);
-    scaleXAnimator.setDuration(10000); // Set the duration in milliseconds
-
-    ObjectAnimator scaleYAnimator2 = ObjectAnimator.ofFloat(imageView, "scaleY", 5.0f, 1.0f);
-    scaleYAnimator.setDuration(10000); // Set the duration in milliseconds
-
-// Create translation animation
-    ObjectAnimator translationXAnimator2 = ObjectAnimator.ofFloat(imageView, "translationX", 300, -300);
-    translationXAnimator.setDuration(10000); // Set the duration in milliseconds
-
-    ObjectAnimator translationYAnimator2 = ObjectAnimator.ofFloat(imageView, "translationY", 0, -200);
-    translationYAnimator.setDuration(10000); // Set the duration in milliseconds
-
-// Create an AnimatorSet to combine animations
-    AnimatorSet animatorSet = new AnimatorSet();
-    animatorSet.playTogether(scaleXAnimator, scaleYAnimator, translationXAnimator, translationYAnimator);
-    AnimatorSet animatorSet2 = new AnimatorSet();
-    animatorSet.playTogether(scaleXAnimator2, scaleYAnimator2, translationXAnimator2, translationYAnimator2);
-
-// Start the animation
     animatorSet.start();
-// Add an animator listener to restart the sequence when it ends
-    animatorSet.addListener(new AnimatorListenerAdapter() {
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            // Restart the animation sequence
-            animatorSet2.start();
-        }
-    });
-    animatorSet2.addListener(new AnimatorListenerAdapter() {
-        @Override
-        public void onAnimationEnd(Animator animation) {
-            // Restart the animation sequence
-            animatorSet.start();
-        }
-    });
-
-// Start the animation sequence
-    animatorSet.start();
-
-
 }
     private void ShowOptionsDialoge() {
         Log.i("MusicPlayerActivity","ShowOptions####");
@@ -336,31 +237,41 @@ private void setupAnimation(){
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         // Handle touch down event for "Start Later" TextView
+                        Calendar selectedStartTimeCal = Calendar.getInstance();
+
+                        // Calculate the next hour
+                        int currentHour = selectedStartTimeCal.get(Calendar.HOUR_OF_DAY);
+                        int nextHour = currentHour + 1;
+
+                        if (nextHour >= 24) {
+                            nextHour = 0; // Wrap around to 0 if it's midnight or later
+                        }
+
+                        // Create a TimePickerDialog with the calculated next hour as the initial hour
                         TimePickerDialog timePickerDialog = new TimePickerDialog(
                                 MusicPlayerActivity.this,
                                 new TimePickerDialog.OnTimeSetListener() {
                                     @Override
                                     public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                                        Calendar selectedStartTimeCal = Calendar.getInstance();
                                         selectedStartTimeCal.set(Calendar.HOUR_OF_DAY, selectedHour);
                                         selectedStartTimeCal.set(Calendar.MINUTE, selectedMinute);
+                                        displayEndTime(selectedHour, selectedMinute);
 
                                         long startTimeMillis = selectedStartTimeCal.getTimeInMillis();
-
                                         long delayMillis = startTimeMillis - System.currentTimeMillis();
 
                                         alertDialog.dismiss(); // Close the dialog
 
                                         // Set up the countdown on the MusicPlayerActivity
                                         countDownTv.setVisibility(View.VISIBLE);
-                                        countDownTv2.setVisibility(View.INVISIBLE);
+                                        countDownTv2.setVisibility(View.VISIBLE);
                                         isCountingdown = true;
                                         isStartingLater = true;
                                         commenceCountdown(delayMillis);
                                     }
                                 },
-                                selectedStartTimeCal.get(Calendar.HOUR_OF_DAY),
-                                selectedStartTimeCal.get(Calendar.MINUTE),
+                                nextHour, // Set the calculated next hour as the initial hour
+                                0, // Set minutes to 0 if you want to start on the hour
                                 false
                         );
                         timePickerDialog.show();
@@ -377,12 +288,26 @@ private void setupAnimation(){
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         // Handle touch down event for "Stop Later" TextView
+                        Calendar selectedEndTimeCal = Calendar.getInstance();
+
+                        // Calculate the next hour by adding an hour
+                        int currentHour = selectedEndTimeCal.get(Calendar.HOUR_OF_DAY);
+                        int nextHour = currentHour + 1;
+
+                        // Round to the closest hour
+                        if (nextHour >= 24) {
+                            nextHour = 0; // Wrap around to 0 if it's midnight or later
+                        }
+
+                        // Create a TimePickerDialog with the calculated next hour as the initial hour
                         TimePickerDialog timePickerDialog = new TimePickerDialog(
                                 MusicPlayerActivity.this,
                                 new TimePickerDialog.OnTimeSetListener() {
                                     @Override
                                     public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                                        displayFormattedTime(selectedHour, selectedMinute);
+                                        displayEndTime(selectedHour, selectedMinute);
+
+                                        // Calculate the delay time for countdown
                                         Calendar selectedEndTimeCal = Calendar.getInstance();
                                         selectedEndTimeCal.set(Calendar.HOUR_OF_DAY, selectedHour);
                                         selectedEndTimeCal.set(Calendar.MINUTE, selectedMinute);
@@ -390,39 +315,34 @@ private void setupAnimation(){
                                         long currentMillis = System.currentTimeMillis();
                                         long endTimeMillis = selectedEndTimeCal.getTimeInMillis();
 
-                                        // Calculate the difference between current time and end time
                                         long timeDifferenceMillis = endTimeMillis - currentMillis;
-                                        //String formattedTime = convertToHHMMSSAM(selectedEndTimeCal);
 
-
-                                        // Check if the desired duration is less than the time difference
                                         if (Long.parseLong(currentSong.getDuration()) <= timeDifferenceMillis) {
-                                            long delayMillis = endTimeMillis - System.currentTimeMillis() - Long.parseLong(currentSong.getDuration());
-                                          /*  countDownTv2.setText("at:"+convertToHHMMSSAM(selectedEndTimeCal));*/
+                                            long delayMillis = endTimeMillis - currentMillis - Long.parseLong(currentSong.getDuration());
+
                                             // Set up the countdown on the MusicPlayerActivity
                                             countDownTv.setVisibility(View.VISIBLE);
                                             countDownTv2.setVisibility(View.VISIBLE);
                                             isCountingdown = true;
                                             isStartingLater = true;
                                             alertDialog.dismiss();
-                                            Log.i("MusicPlayer","Intent1");
 
                                             Intent serviceIntent = new Intent(getApplicationContext(), CountdownService.class);
                                             serviceIntent.setAction("START_COUNTDOWN");
-                                            serviceIntent.putExtra("DELAY_MILLIS", delayMillis); // Calculate delayMillis as needed
-                                            serviceIntent.putExtra("ISLater",isStartingLater);
-                                            serviceIntent.putExtra("ISCountingDown",isCountingdown);
+                                            serviceIntent.putExtra("DELAY_MILLIS", delayMillis);
+                                            serviceIntent.putExtra("ISLater", isStartingLater);
+                                            serviceIntent.putExtra("ISCountingDown", isCountingdown);
 
                                             startService(serviceIntent);
 
-                                           commenceCountdown(delayMillis);
+                                            commenceCountdown(delayMillis);
                                         } else {
                                             Toast.makeText(MusicPlayerActivity.this, "Please select a valid duration", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 },
-                                selectedEndTimeCal.get(Calendar.HOUR_OF_DAY),
-                                selectedEndTimeCal.get(Calendar.MINUTE),
+                                nextHour, // Set the calculated next hour as the initial hour
+                                0, // Set minutes to 0 if you want to start on the hour
                                 false
                         );
                         timePickerDialog.show();
@@ -433,14 +353,12 @@ private void setupAnimation(){
             }
         });
 
-
-
         // Show the dialog
         alertDialog = builder.create();
         alertDialog.show();
     }
     // Define the method for formatting the time
-    private void displayFormattedTime(int hourOfDay, int minute) {
+    private void displayEndTime(int hourOfDay, int minute) {
         String timeFormat;
         if (hourOfDay >= 12) {
             timeFormat = "PM";
@@ -502,6 +420,8 @@ private void setupAnimation(){
 
     private void commenceCountdown(long delayMillis) {
         Log.i("MusicPlayer", "commenceCountdown isCountingdown:" + isCountingdown);
+
+
         if (isCountingdown) {
             String delayFormatted = convertToMMSS(String.valueOf(delayMillis));
 
@@ -520,7 +440,7 @@ private void setupAnimation(){
             }
         }
 
-
+        wakeLock.acquire();
             countdownHandler.postDelayed(new Runnable() {
                 long remainingMillis = delayMillis;
 
@@ -536,7 +456,7 @@ private void setupAnimation(){
                     if (remainingMillis > 0) {
                         if (isStartingLater) {
                             Log.i("MusicPlayer","postDelayedcommenceCountdown4");
-                            countDownTv.setText("Playback starts in: " + convertToMMSS(remainingMillis));
+                            countDownTv.setText("Playback begins: " + convertToMMSS(remainingMillis));
                         } else {
                             Log.i("MusicPlayer","postDelayedcommenceCountdown5");
                             countDownTv.setText("Finishing "+convertToMMSS(selectedEndTimeCal.getTimeInMillis())+" Playback stops in: " + convertToMMSS(remainingMillis));
@@ -576,6 +496,7 @@ private void setupAnimation(){
         public void run() {
             // Code to stop playback at the specified end time
             mediaPlayer.pause(); // Pause playback when the end time is reached
+            wakeLock.release();
             countDownTv.setVisibility(View.INVISIBLE);
         }
     };
@@ -585,7 +506,7 @@ private void setupAnimation(){
         playgif();
         mediaPlayer.reset();
         setupAnimation();
-        ImageView imageView = findViewById(R.id.music_icon_big);
+        //ImageView imageView = findViewById(R.id.music_icon_big);
 
         try {
             mediaPlayer.setDataSource(currentSong.getPath());
@@ -689,6 +610,10 @@ private void setupAnimation(){
     private void pausePlay(){
         ImageView imageView = findViewById(R.id.music_icon_big);
 
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+        }
+
         if(mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             imageView.clearAnimation();
@@ -700,6 +625,26 @@ private void setupAnimation(){
         }
     }
 
+    @Override
+    protected void onDestroy() {
+
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+        }
+
+        super.onDestroy();
+
+    }
+
+    @Override
+    protected void onPause() {
+
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+        }
+
+        super.onPause();
+    }
     /*private String formatTime(long millis) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         return dateFormat.format(new Date(millis));
