@@ -120,10 +120,12 @@ public class MusicPlayerActivity extends AppCompatActivity {
 
                         // Apply rotation animation
                         //musicIcon.setRotation(x++);
+                        int parentWidth = ((View) imageView.getParent()).getWidth();
+                        int imageViewWidth = imageView.getWidth();
+                        float offsetX = (parentWidth - imageViewWidth) / 2.0f;
 
                         imageView.setScaleType(ImageView.ScaleType.MATRIX);
                         // Calculate the translation needed to center the image horizontally
-                        float offsetX = (imageView.getWidth()-1000 ) / 2.0f; // imageWidth is the width of your image
 
 
                         //Crop image
@@ -174,7 +176,38 @@ public class MusicPlayerActivity extends AppCompatActivity {
 private void setupAnimation(){
 // Get the ImageView you want to animate
     ImageView imageView = findViewById(R.id.music_icon_big);
+// Assuming you have an ImageView called 'imageView'
+    imageView.setScaleX(0.0f); // Initial scale X squashes0.5
+    imageView.setScaleY(0.0f); // Initial scale Y
 
+// Define the pivot point for scaling (center of the image)
+    imageView.setPivotX(imageView.getWidth() / 2.0f);
+    imageView.setPivotY(imageView.getHeight() / 2.0f);
+
+// Calculate the translation needed to center the image horizontally
+    float translateX = (imageView.getWidth() / 4.0f); // Half of half of the image width
+
+// Create a scale animation
+    ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(imageView, "scaleX", 1.2f);
+    scaleXAnimator.setDuration(7000); // Set the duration in milliseconds
+    scaleXAnimator.setRepeatCount(ValueAnimator.INFINITE); // Set the number of times to repeat (1 time)
+    scaleXAnimator.setRepeatMode(ValueAnimator.REVERSE); // Reverse the animation after each cycle
+
+    ObjectAnimator scaleYAnimator = ObjectAnimator.ofFloat(imageView, "scaleY", 1.2f);
+    scaleYAnimator.setDuration(7000); // Set the duration in milliseconds
+    scaleYAnimator.setRepeatCount(ValueAnimator.INFINITE); // Set the number of times to repeat (1 time)
+    scaleYAnimator.setRepeatMode(ValueAnimator.REVERSE); // Reverse the animation after each cycle
+
+// Create a translation animation
+    ObjectAnimator translateXAnimator = ObjectAnimator.ofFloat(imageView, "translationX", 0.0f, translateX);
+    translateXAnimator.setDuration(6000); // Set the duration in milliseconds
+
+    AnimatorSet animatorSet = new AnimatorSet();
+    animatorSet.playTogether(scaleXAnimator, scaleYAnimator,translateXAnimator);
+
+    animatorSet.start();
+
+ /*
     ObjectAnimator scaleXAnimator = ObjectAnimator.ofFloat(imageView, "scaleX", 1.0f, 1.5f);
     scaleXAnimator.setDuration(7000); // Set the duration in milliseconds
     scaleXAnimator.setRepeatCount(ValueAnimator.INFINITE); // Set the number of times to repeat (1 time)
@@ -188,7 +221,7 @@ private void setupAnimation(){
     AnimatorSet animatorSet = new AnimatorSet();
     animatorSet.playTogether(scaleXAnimator, scaleYAnimator);
 
-    animatorSet.start();
+    animatorSet.start();*/
 }
     private void ShowOptionsDialoge() {
         Log.i("MusicPlayerActivity","ShowOptions####");
