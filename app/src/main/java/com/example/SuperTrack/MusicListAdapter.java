@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.media.MediaMetadataRetriever;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -82,13 +83,19 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
         public void onBindViewHolder( MusicListAdapter.ViewHolder holder, int position) {
         Log.i("TAG", "onBindViewHolder: "  );
 
-        AudioModel songData = songsList.get(position);
-            holder.titleTextView.setText(songData.getTitle());
-            holder.durationTv.setText(holder.convertToMMSS(Long.parseLong(songData.getDuration())));
+        Typeface typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
 
+            AudioModel songData = songsList.get(position);
             String truncatedTitle = truncateTitle(songData.getTitle(), 30);
 
             holder.titleTextView.setText(truncatedTitle);
+            holder.titleTextView.setText(songData.getTitle());
+            holder.titleTextView.setTypeface(typeface);
+
+            holder.durationTv.setText(holder.convertToMMSS(Long.parseLong(songData.getDuration())));
+            holder.durationTv.setTypeface(typeface);
+
+
 
             Bitmap albumArtBitmap = getAlbumArtBytesForSong(songData); // Implement a method to get album art bytes
 
@@ -120,7 +127,8 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     //navigate to another acitivty
                     if (!songsList.isEmpty()) {
                     MyMediaPlayer.getInstance().reset();
-
+                    MusicStateSingleton.getInstance().setSongTitle(holder.titleTextView.getText().toString());
+                    MusicStateSingleton.getInstance().setDuration(holder.durationTv.getText().toString());
                     MusicStateSingleton.getInstance().setMusicPlaying(false);
                         Log.i("TAG", "onBindViewHolder onClick:isMusicPlaying False "  );
 

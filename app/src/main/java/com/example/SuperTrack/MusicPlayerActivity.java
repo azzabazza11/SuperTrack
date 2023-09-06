@@ -24,8 +24,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -107,7 +105,7 @@ public class MusicPlayerActivity extends AppCompatActivity implements MainActivi
         MusicStateSingleton.getInstance().setSonglist(songsList);
         Log.i("TAG", "MusicStateSingleton.getInstance().setSonglist(songsList);" + songsList.toString());
 
-        Log.i("TAG", "MusicStateSingleton.getInstance().getSonglist();" + MusicStateSingleton.getInstance().getSonglist().toString());
+        Log.i("TAG", "MusicStateSingleton.getInstance().getSonglist();" + MusicStateSingleton.getInstance().getArraySonglist().toString());
 
         MainActivity.MusicControlListener musicControlListener = this;
 
@@ -244,7 +242,17 @@ private void setupAnimation(){
         TextView startNowTv = dialogView.findViewById(R.id.Tv_start_now);
         TextView startLaterTv = dialogView.findViewById(R.id.Tv_start_later);
         TextView stopLaterTv = dialogView.findViewById(R.id.Tv_stop_later);
+        TextView titleTv = dialogView.findViewById(R.id.titleTv);
 
+        String songTitle = MusicStateSingleton.getInstance().getSongTitle() ;
+        if (songTitle.length() > 30) {
+            songTitle = songTitle.substring(0, 30); // Trim the string to 30 characters
+        }
+        /*ArrayList<AudioModel> song = MusicStateSingleton.getInstance().getArraySonglist();
+        AudioModel model = song.get(MusicStateSingleton.getInstance().getCurrentPos());*/
+        String duration = MusicStateSingleton.getInstance().getDuration();
+
+        titleTv.setText(songTitle+ "     "+ duration);
 
         startNowTv.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -574,9 +582,16 @@ private void setupAnimation(){
     }
 
     public void playMusic(){
-
+        String songTitle = MusicStateSingleton.getInstance().getSongTitle() ;
+        if (songTitle.length() > 30) {
+            songTitle = songTitle.substring(0, 30); // Trim the string to 30 characters
+        }
+        /*ArrayList<AudioModel> song = MusicStateSingleton.getInstance().getArraySonglist();
+        AudioModel model = song.get(MusicStateSingleton.getInstance().getCurrentPos());*/
+        String duration = MusicStateSingleton.getInstance().getDuration();
             playgif();
             setupAnimation();
+            countDownTv2.setText(songTitle +" "+ duration);
             /*ImageView imageView = findViewById(R.id.music_icon_big);
             Animation enlargeShrinkAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.enlarge_shrink);
             imageView.startAnimation(enlargeShrinkAnimation);*/
@@ -655,7 +670,7 @@ public void playMusic(boolean flag){
     @Override
     public void PlayNextSong(boolean flag) {
 
-        ArrayList<AudioModel> songs = MusicStateSingleton.getInstance().getSonglist();
+        ArrayList<AudioModel> songs = MusicStateSingleton.getInstance().getArraySonglist();
 
         Log.d("TAG","PlayNextSong from MAIN"  );
 
@@ -694,7 +709,7 @@ public void playMusic(boolean flag){
         playMusic(true);
     }
     public void PlayPreviousSong(boolean flag) {
-        ArrayList<AudioModel> songs = MusicStateSingleton.getInstance().getSonglist();
+        ArrayList<AudioModel> songs = MusicStateSingleton.getInstance().getArraySonglist();
 
         int songlistsize = MusicStateSingleton.getInstance().songListSize();
         if(MyMediaPlayer.currentIndex== 0)

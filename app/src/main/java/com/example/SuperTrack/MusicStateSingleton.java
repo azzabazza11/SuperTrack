@@ -12,6 +12,7 @@ public class MusicStateSingleton {
     private int songListSize;
 
     private String currentSongPath;
+    private String duration;
     private ArrayList<AudioModel> songlist;
     private MusicStateSingleton() {
         // Private constructor to prevent instantiation
@@ -59,7 +60,15 @@ public class MusicStateSingleton {
     }
 
     public void setCurrentPos(int pos) {
+
         currentPos = pos;
+    }
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String dur) {
+        duration = dur;
     }
     public void setSongTitle(String songtitle){
         currentSongTitle = songtitle;
@@ -67,7 +76,7 @@ public class MusicStateSingleton {
     public String getSongTitle(){
         return currentSongTitle;
     }
-    public ArrayList<AudioModel> getSonglist(){
+    public ArrayList<AudioModel> getArraySonglist(){
         return songlist;
     }
     public void setSonglist(ArrayList<AudioModel> list) {

@@ -14,7 +14,9 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
-
+    <style name="CustomFont">
+        <item name="android:fontFamily">CustomFont</item>
+    </style>
     <style name="Theme.AlertDialog" parent="Theme.MaterialComponents.Dialog">
         <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button.TextButton.Dialog</item>
         <item name="android:colorBackground">@color/colorBackground</item>
