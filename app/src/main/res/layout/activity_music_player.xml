@@ -130,11 +130,11 @@
                 android:id="@+id/next"/>
 
             <ImageView
+                android:id="@+id/pause_play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_pause_circle_outline_24"
                 android:layout_centerInParent="true"
-                android:id="@+id/pause_play"/>
+                android:src="@drawable/ic_baseline_pause_circle_outline_24" />
 
         </RelativeLayout>
 

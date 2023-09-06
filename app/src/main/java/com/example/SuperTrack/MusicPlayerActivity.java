@@ -43,7 +43,10 @@ import java.util.concurrent.TimeUnit;
 
 import com.bumptech.glide.Glide;
 
-public class MusicPlayerActivity extends AppCompatActivity {
+public class MusicPlayerActivity extends AppCompatActivity implements MainActivity.MusicControlListener {
+    // Implement the methods from the interface here
+    // ...
+
 
     TextView titleTv, currentTimeTv, totalTimeTv, countDownTv, countDownTv2;
     SeekBar seekBar;
@@ -91,6 +94,7 @@ public class MusicPlayerActivity extends AppCompatActivity {
 
         songsList = (ArrayList<AudioModel>) getIntent().getSerializableExtra("LIST");
         // Register the BroadcastReceiver
+
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         registerReceiver(screenStateReceiver, filter);
 
@@ -100,10 +104,14 @@ public class MusicPlayerActivity extends AppCompatActivity {
         // Calculate the delay time for countdown
         // Close the dialog
         // Set up the countdown on the MusicPlayerActivity
+        MusicStateSingleton.getInstance().setSonglist(songsList);
+        Log.i("TAG", "MusicStateSingleton.getInstance().setSonglist(songsList);" + songsList.toString());
 
+        Log.i("TAG", "MusicStateSingleton.getInstance().getSonglist();" + MusicStateSingleton.getInstance().getSonglist().toString());
 
+        MainActivity.MusicControlListener musicControlListener = this;
 
-        ShowOptionsDialoge();
+        ShowOptionsDialog();
 
         setResourcesWithMusic();
 
@@ -223,14 +231,14 @@ private void setupAnimation(){
 
     animatorSet.start();*/
 }
-    private void ShowOptionsDialoge() {
+    public void ShowOptionsDialog() {
         Log.i("MusicPlayerActivity","ShowOptions####");
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_MaterialComponents_Dialog);
 
         View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_playback_options, null);
         builder.setView(dialogView);
 
-        Log.i("MusicPlayerActivity","ShowOptions####DONE");
+        Log.i("MusicPlayerActivity","ShowOptionsDialoge");
 
         // Find radio buttons in the dialog layout
         TextView startNowTv = dialogView.findViewById(R.id.Tv_start_now);
@@ -243,13 +251,20 @@ private void setupAnimation(){
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
+                        Log.i("MusicPlayerActivity","MotionEvent.ACTION_DOWN");
+
                         // Handle touch down event (similar to onCheckedChanged for RadioButton)
                         isCountingdown = false;
 
                       //  countDownTv.setVisibility(View.GONE);
                         if (!songsList.isEmpty()) {
+                            Log.i("MusicPlayerActivity","!songsList.isEmpty()");
+
                             // Access the item in the list
                             currentSong = songsList.get(MyMediaPlayer.currentIndex);
+                            //SET SINGLETON CURRENT SONGPATH
+                            MusicStateSingleton.getInstance().setCurrentSongPath(currentSong.getPath());
+
                             countDownTv.setVisibility(View.INVISIBLE);
                             playMusic(); // Start playback immediately
                             alertDialog.dismiss(); // Close the dialog
@@ -390,6 +405,22 @@ private void setupAnimation(){
         alertDialog = builder.create();
         alertDialog.show();
     }
+
+    @Override
+    public void onMusicPlayerFinished() {
+
+    }
+
+   /* @Override
+    public void PlayNextSong() {
+
+    }
+
+    @Override
+    public void PlayPreviousSong() {
+
+    }*/
+
     // Define the method for formatting the time
     private void displayEndTime(int hourOfDay, int minute) {
         String timeFormat;
@@ -510,15 +541,20 @@ private void setupAnimation(){
 
 
     void setResourcesWithMusic(){
-        currentSong = songsList.get(MyMediaPlayer.currentIndex);
 
+        currentSong = songsList.get(MyMediaPlayer.currentIndex);
+        //SETUP SINGLETON WITH CURRENT SONG
+        MusicStateSingleton.getInstance().setCurrentSongPath(currentSong.getPath());
+        MusicStateSingleton.getInstance().setSongTitle(currentSong.getTitle());
+        //MusicStateSingleton.getInstance().setSonglist(songsList);
         titleTv.setText(currentSong.getTitle());
 
         totalTimeTv.setText(convertToMMSS(currentSong.getDuration()));
 
         pausePlay.setOnClickListener(v-> pausePlay());
-        nextBtn.setOnClickListener(v-> playNextSong());
-        previousBtn.setOnClickListener(v-> playPreviousSong());
+
+        nextBtn.setOnClickListener(v -> PlayNextSong());
+        previousBtn.setOnClickListener(v-> PlayPreviousSong());
         countDownTv.setVisibility(View.INVISIBLE);
        // playMusic();
 
@@ -533,22 +569,17 @@ private void setupAnimation(){
             countDownTv.setVisibility(View.INVISIBLE);
         }
     };
+    public AudioModel getcurrentsong(){
+        return currentSong;
+    }
 
+    public void playMusic(){
 
-    private void playMusic(){
-        playgif();
-        mediaPlayer.reset();
-        setupAnimation();
-        //ImageView imageView = findViewById(R.id.music_icon_big);
-
-        try {
-            mediaPlayer.setDataSource(currentSong.getPath());
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-            seekBar.setProgress(0);
-            seekBar.setMax(mediaPlayer.getDuration());
-            //Animation enlargeShrinkAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.enlarge_shrink);
-           // imageView.startAnimation(enlargeShrinkAnimation);
+            playgif();
+            setupAnimation();
+            /*ImageView imageView = findViewById(R.id.music_icon_big);
+            Animation enlargeShrinkAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.enlarge_shrink);
+            imageView.startAnimation(enlargeShrinkAnimation);*/
 
             // Delay to allow the enlargement animation to complete
          /*   new Handler().postDelayed(new Runnable() {
@@ -558,10 +589,123 @@ private void setupAnimation(){
                     imageView.clearAnimation();
                 }
             }, enlargeShrinkAnimation.getDuration());*/
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
+            mediaPlayer.reset();
+            try {
+                mediaPlayer.setDataSource(currentSong.getPath());
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+                seekBar.setProgress(0);
+                seekBar.setMax(mediaPlayer.getDuration());
+                MusicStateSingleton.getInstance().setMusicPlaying(true);
+                Log.d("TAG","MusicPlayerActivity playMusic true");
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+    }
+
+public void playMusic(boolean flag){
+        Log.d("TAG","MusicPlayerActivity playMusic");
+
+
+
+
+            mediaPlayer.reset();
+            try {
+                mediaPlayer.setDataSource( currentSong.getPath());
+                mediaPlayer.prepare();
+                mediaPlayer.start();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+
+
+
+    }
+
+
+    public void PlayNextSong() {
+        Log.d("TAG","PlayNextSong from MusicPlayerActivity" );
+
+        int songlistsize = MusicStateSingleton.getInstance().songListSize();
+        Log.d("TAG","SongListSize"+songlistsize);
+
+
+        if(MyMediaPlayer.currentIndex== songlistsize-1)
+            return;
+        countdownHandler.removeCallbacksAndMessages(null);
+        MyMediaPlayer.currentIndex +=1;
+
+        Log.d("TAG","MyMediaPlayer.currentIndex"+MyMediaPlayer.currentIndex);
+
+        mediaPlayer.reset();
+
+        if(!MusicStateSingleton.getInstance().isFromMainactivity()) {
+            setResourcesWithMusic();
+            ShowOptionsDialog();
+
+        }else{playMusic();}
+    }
+
+    @Override
+    public void PlayNextSong(boolean flag) {
+
+        ArrayList<AudioModel> songs = MusicStateSingleton.getInstance().getSonglist();
+
+        Log.d("TAG","PlayNextSong from MAIN"  );
+
+        int songlistsize = MusicStateSingleton.getInstance().songListSize();
+        Log.d("TAG","SongListSize"+songlistsize);
+        Log.d("TAG","current index"+MyMediaPlayer.currentIndex);
+
+
+        if(MyMediaPlayer.currentIndex== songlistsize-1)
+            return;
+        countdownHandler.removeCallbacksAndMessages(null);
+       // if(MyMediaPlayer.currentIndex < MusicStateSingleton.getInstance().songListSize()-1 ) {
+            MyMediaPlayer.currentIndex += 1;
+            currentSong = songs.get(MyMediaPlayer.currentIndex);
+      //  }
+        Log.d("TAG","MyMediaPlayer.currentIndex"+MyMediaPlayer.currentIndex);
+
+        mediaPlayer.reset();
+
+        if(!MusicStateSingleton.getInstance().isFromMainactivity()) {
+            setResourcesWithMusic();
+            ShowOptionsDialog();
+
+        }else{playMusic(true);}
+    }
+
+
+    public void PlayPreviousSong() {
+
+        int songlistsize = MusicStateSingleton.getInstance().songListSize();
+        if(MyMediaPlayer.currentIndex== 0)
+            return;
+        countdownHandler.removeCallbacksAndMessages(null);
+        MyMediaPlayer.currentIndex -=1;
+        mediaPlayer.reset();
+        playMusic(true);
+    }
+    public void PlayPreviousSong(boolean flag) {
+        ArrayList<AudioModel> songs = MusicStateSingleton.getInstance().getSonglist();
+
+        int songlistsize = MusicStateSingleton.getInstance().songListSize();
+        if(MyMediaPlayer.currentIndex== 0)
+            return;
+
+        countdownHandler.removeCallbacksAndMessages(null);
+        currentSong = songs.get(MyMediaPlayer.currentIndex - 1);
+
+        MyMediaPlayer.currentIndex -=1;
+        mediaPlayer.reset();
+        playMusic(true);
 
     }
 
@@ -572,94 +716,46 @@ private void setupAnimation(){
                 .load(R.raw.background_animation) // Replace with your GIF resource
                 .into(musicIcon);
     }
-    private void startPlaybackWithDelay(long delayMillis) {
-        long startTime = System.currentTimeMillis() + delayMillis;
-        long endTime = startTime + mediaPlayer.getDuration(); // End time is when playback naturally ends
-
-        mediaPlayer.reset();
-        try {
-            mediaPlayer.setDataSource(currentSong.getPath());
-            mediaPlayer.prepare();
-            mediaPlayer.seekTo(mediaPlayer.getCurrentPosition() + (int) delayMillis);
-            mediaPlayer.start();
-
-            // Schedule a task to stop playback at the end time
-            handler.postDelayed(stopPlaybackRunnable, endTime - System.currentTimeMillis());
-
-            // Provide feedback to the user
-            Toast.makeText(this, "Playback will start in " + (delayMillis / 1000) + " seconds", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-   /* private void updateCountdown() {
-        long currentTimeMillis = System.currentTimeMillis();
-        long selectedStartTimeMillis = 0;
-        long remainingTimeMillis = selectedStartTimeMillis - currentTimeMillis;
-
-        if (remainingTimeMillis > 0) {
-        //    countdownTextView.setText("Playback starts in: " + formatTime(remainingTimeMillis));
-            countdownHandler.postDelayed(() -> updateCountdown(), 1000);
-        } else {
-        //    countdownTextView.setVisibility(View.GONE);
-            playMusic();
-        }
-    }*/
-  /*  private void startPlaybackWithDelay(long delayMillis) {
-        // Calculate the start and end points based on the current time and the delay
-        long startTime = System.currentTimeMillis() + delayMillis;
-        long endTime = startTime + trackDuration; // Assuming trackDuration is known
-
-        // Start playback using the calculated start and end points
-        MyMediaPlayer.getInstance().play(startTime, endTime);
-
-        // Provide feedback to the user
-        Toast.makeText(this, "Playback will start in " + (delayMillis / 1000) + " seconds", Toast.LENGTH_SHORT).show();
-    }*/
 
 
-    private void playNextSong(){
-
-        if(MyMediaPlayer.currentIndex== songsList.size()-1)
-            return;
-        countdownHandler.removeCallbacksAndMessages(null);
-        MyMediaPlayer.currentIndex +=1;
-        mediaPlayer.reset();
-        setResourcesWithMusic();
-       ShowOptionsDialoge();
-
-    }
-
-    private void playPreviousSong(){
-        if(MyMediaPlayer.currentIndex== 0)
-            return;
-        countdownHandler.removeCallbacksAndMessages(null);
-        MyMediaPlayer.currentIndex -=1;
-        mediaPlayer.reset();
-        setResourcesWithMusic();
-        ShowOptionsDialoge();
-    }
-
-    private void pausePlay(){
-        ImageView imageView = findViewById(R.id.music_icon_big);
+    public void pausePlay(){
+        Log.i("TAG","MusicPlayerActivity pausePlay()");
 
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
         }
+        Log.d("TAG","MediaPlayer is playing before?" + MusicStateSingleton.getInstance().isMusicPlaying());
+        Log.d("TAG","isFromMainActivity?" + MusicStateSingleton.getInstance().isFromMainactivity());
 
         if(mediaPlayer.isPlaying()) {
+            MusicStateSingleton.getInstance().setMusicPlaying(false);
+            Log.d("TAG","now mediaplayer isplaying: {"+ MusicStateSingleton.getInstance().isMusicPlaying());
             mediaPlayer.pause();
-            imageView.clearAnimation();
+            if(!MusicStateSingleton.getInstance().isFromMainactivity()) {
+                ImageView imageView = findViewById(R.id.music_icon_big);
+             imageView.clearAnimation();
+
+            }
+
         }
         else {
+
+
+            MusicStateSingleton.getInstance().setMusicPlaying(true);
+
+            Log.d("TAG"," MediaPlayer is playing?" + MusicStateSingleton.getInstance().isMusicPlaying());
+
             mediaPlayer.start();
-            Animation enlargeShrinkAnimation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.enlarge_shrink);
-            imageView.startAnimation(enlargeShrinkAnimation);
+             if(!MusicStateSingleton.getInstance().isFromMainactivity()) setupAnimation();
+
         }
+
+        MusicStateSingleton.getInstance().setIsFromMainactivity(false);
     }
 
     @Override
     protected void onDestroy() {
+        Log.d("TAG","MusicPlayerActivityonDestroy");
 
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
@@ -671,6 +767,7 @@ private void setupAnimation(){
 
     @Override
     protected void onPause() {
+        Log.d("TAG","MusicPlayerActivityonPause");
 
         if (wakeLock != null && wakeLock.isHeld()) {
             wakeLock.release();
@@ -678,24 +775,7 @@ private void setupAnimation(){
 
         super.onPause();
     }
-    /*private String formatTime(long millis) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-        return dateFormat.format(new Date(millis));
-    }*/
-   /* private String formatTime(long millis) {
-        long totalSeconds = TimeUnit.MILLISECONDS.toSeconds(millis);
-        long minutes = totalSeconds / 60;
-        long seconds = totalSeconds % 60;
 
-        return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
-    }*/
-
-  /*  public static String convertToMMSS(String duration){
-        Long millis = Long.parseLong(duration);
-        return String.format("%02d:%02d",
-                TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
-    }*/
     public static String convertToMMSS(String duration) {
         Long millis = Long.parseLong(duration);
         long hours = TimeUnit.MILLISECONDS.toHours(millis);
@@ -761,11 +841,5 @@ private void setupAnimation(){
 
         return String.format("%2d:%02d:%02d %s", hours, minutes, seconds, timeFormat);
     }
-  /*  public static String convertToHHMMSS(String duration) {
-        Long millis = Long.parseLong(duration);
-        return String.format("%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(millis),
-                TimeUnit.MILLISECONDS.toMinutes(millis) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(millis) % TimeUnit.MINUTES.toSeconds(1));
-    }*/
+
 }

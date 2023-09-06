@@ -80,11 +80,13 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
 
     @Override
         public void onBindViewHolder( MusicListAdapter.ViewHolder holder, int position) {
-            AudioModel songData = songsList.get(position);
+        Log.i("TAG", "onBindViewHolder: "  );
+
+        AudioModel songData = songsList.get(position);
             holder.titleTextView.setText(songData.getTitle());
             holder.durationTv.setText(holder.convertToMMSS(Long.parseLong(songData.getDuration())));
 
-            String truncatedTitle = truncateTitle(songData.getTitle(), 35);
+            String truncatedTitle = truncateTitle(songData.getTitle(), 30);
 
             holder.titleTextView.setText(truncatedTitle);
 
@@ -102,28 +104,27 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
             new ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView((RecyclerView) holder.itemView.getParent());
             //Global positiion
             positionHolder = position;
+
             if(MyMediaPlayer.currentIndex==position){
-                holder.titleTextView.setTextColor(Color.parseColor("#FF0000"));
+                holder.titleTextView.setTextColor(Color.parseColor("#E4AE44"));
             }else{
                 holder.titleTextView.setTextColor(Color.parseColor("#000000"));
             }
 
-            // Inside onBindViewHolder
 
-           /* holder.deleteButton.setOnClickListener(view -> {
-                if (onDeleteClickListener != null) {
-                    onDeleteClickListener.onDeleteClick(position);
-
-                    Log.i("MUSICADAPTER","OndeletEclick");
-                }
-            });*/
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    Log.i("TAG", "onBindViewHolder onClick: "  );
+
                     //navigate to another acitivty
                     if (!songsList.isEmpty()) {
                     MyMediaPlayer.getInstance().reset();
-                    MyMediaPlayer.currentIndex = position;
+
+                    MusicStateSingleton.getInstance().setMusicPlaying(false);
+                        Log.i("TAG", "onBindViewHolder onClick:isMusicPlaying False "  );
+
+                        MyMediaPlayer.currentIndex = position;
                     Intent intent = new Intent(context,MusicPlayerActivity.class);
                     intent.putExtra("LIST",songsList);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
