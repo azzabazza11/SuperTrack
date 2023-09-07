@@ -11,10 +11,13 @@ public class AudioModel implements Parcelable {
     String title;
     String duration;
 
-    public AudioModel(String path, String title, String duration) {
+    String groupName;
+
+    public AudioModel(String path, String title, String duration, String groupName) {
         this.path = path;
         this.title = title;
         this.duration = duration;
+        this.groupName = groupName;
         Log.i("AudioModel","constr");
     }
     // Parcelable constructor
@@ -22,6 +25,7 @@ public class AudioModel implements Parcelable {
         path = in.readString();
         title = in.readString();
         duration = in.readString();
+        groupName = in.readString();
     }
 
     public static final Creator<AudioModel> CREATOR = new Creator<AudioModel>() {

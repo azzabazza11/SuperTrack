@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements    MusicListAdapt
         String path = getPathFromUri(uri);
         long duration = getAudioDurationFromUri(uri); // Retrieve duration for each Uri
 
-        AudioModel audioModel = new AudioModel(path, title, String.valueOf(duration));
+        AudioModel audioModel = new AudioModel(path, title, String.valueOf(duration),"default");
         songsList.add(audioModel);
     }
 

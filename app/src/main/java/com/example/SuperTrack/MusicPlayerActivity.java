@@ -311,7 +311,8 @@ private void setupAnimation(){
                                     public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
                                         selectedStartTimeCal.set(Calendar.HOUR_OF_DAY, selectedHour);
                                         selectedStartTimeCal.set(Calendar.MINUTE, selectedMinute);
-                                        displayEndTime(selectedHour, selectedMinute);
+
+                                        displayEndTime(selectedHour, selectedMinute,true);
 
                                         long startTimeMillis = selectedStartTimeCal.getTimeInMillis();
                                         long delayMillis = startTimeMillis - System.currentTimeMillis();
@@ -361,7 +362,7 @@ private void setupAnimation(){
                                 new TimePickerDialog.OnTimeSetListener() {
                                     @Override
                                     public void onTimeSet(TimePicker view, int selectedHour, int selectedMinute) {
-                                        displayEndTime(selectedHour, selectedMinute);
+                                        displayEndTime(selectedHour, selectedMinute, false);
 
                                         // Calculate the delay time for countdown
                                         Calendar selectedEndTimeCal = Calendar.getInstance();
@@ -430,7 +431,7 @@ private void setupAnimation(){
     }*/
 
     // Define the method for formatting the time
-    private void displayEndTime(int hourOfDay, int minute) {
+    private void displayEndTime(int hourOfDay, int minute, boolean startlaterflag) {
         String timeFormat;
         if (hourOfDay >= 12) {
             timeFormat = "PM";
@@ -445,8 +446,13 @@ private void setupAnimation(){
         }
 
         String formattedTime = String.format(Locale.getDefault(), "%2d:%02d %s", hourOfDay, minute, timeFormat);
-        countDownTv2.setText("Track Ends: "+formattedTime);
+
+        if(startlaterflag) {
+            countDownTv2.setText("Track Begins: " + formattedTime);
+
+        }else{ countDownTv2.setText("Track Ends: "+formattedTime);}
     }
+
     private Pair<Integer,Integer> selectTime(){
 
         Calendar calendar = Calendar.getInstance();
