@@ -313,7 +313,6 @@ private void setupAnimation(){
                                         selectedStartTimeCal.set(Calendar.MINUTE, selectedMinute);
 
                                         displayEndTime(selectedHour, selectedMinute,true);
-
                                         long startTimeMillis = selectedStartTimeCal.getTimeInMillis();
                                         long delayMillis = startTimeMillis - System.currentTimeMillis();
 
@@ -734,7 +733,7 @@ public void playMusic(boolean flag){
 
 
         Glide.with(this)
-                .load(R.raw.background_animation) // Replace with your GIF resource
+                .load(R.raw.n) // Replace with your GIF resource
                 .into(musicIcon);
     }
 

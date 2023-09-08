@@ -1,5 +1,6 @@
 package com.example.SuperTrack;
 
+import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -12,13 +13,15 @@ public class AudioModel implements Parcelable {
     String duration;
 
     String groupName;
+    boolean isSelected;
 
-    public AudioModel(String path, String title, String duration, String groupName) {
+    public AudioModel(String path, String title, String duration, String groupName,boolean isSelected) {
         this.path = path;
         this.title = title;
         this.duration = duration;
         this.groupName = groupName;
-        Log.i("AudioModel","constr");
+        this.isSelected = isSelected;
+
     }
     // Parcelable constructor
     protected AudioModel(Parcel in) {
@@ -26,6 +29,9 @@ public class AudioModel implements Parcelable {
         title = in.readString();
         duration = in.readString();
         groupName = in.readString();
+
+            isSelected = in.readBoolean();
+
     }
 
     public static final Creator<AudioModel> CREATOR = new Creator<AudioModel>() {
@@ -62,6 +68,28 @@ public class AudioModel implements Parcelable {
     public void setDuration(String duration) {
         this.duration = duration;
     }
+    public String getGroupName() {
+        return groupName;
+    }
+    public String makeString(){
+        String str = ("title: " +getTitle()+ " groupname:"+ getGroupName()) ;
+        return str;
+
+
+    }
+    public void setGroupName(String name) {
+
+        Log.d("TAG","setGroupName"+  name);
+
+        this.groupName = name;
+    }
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setIsSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
 
     @Override
     public int describeContents() {
@@ -73,5 +101,7 @@ public class AudioModel implements Parcelable {
         dest.writeString(path);
         dest.writeString(title);
         dest.writeString(duration);
+        dest.writeString(groupName);
+        dest.writeBoolean(isSelected);
     }
 }

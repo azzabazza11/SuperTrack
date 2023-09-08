@@ -1,6 +1,7 @@
 package com.example.SuperTrack;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MusicStateSingleton {
     private static MusicStateSingleton instance;
@@ -10,7 +11,7 @@ public class MusicStateSingleton {
     private int currentPos;
 
     private int songListSize;
-
+    List<Integer> selectedItems = new ArrayList<>();
     private String currentSongPath;
     private String duration;
     private ArrayList<AudioModel> songlist;
@@ -62,6 +63,16 @@ public class MusicStateSingleton {
     public void setCurrentPos(int pos) {
 
         currentPos = pos;
+    }
+
+    public  List<Integer> getSelectedItems() {
+
+        return this.selectedItems;
+    }
+
+    public void setSelectedItems(List<Integer> list) {
+
+        this.selectedItems  = list;
     }
     public String getDuration() {
         return duration;

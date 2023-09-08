@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
@@ -26,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 
-public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.ViewHolder>{
+public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.ViewHolder>  {
 
     private ArrayList<AudioModel> songsList;
     Context context;
@@ -34,13 +35,31 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
     OnDeleteClickListener onDeleteClickListener;
     private OnItemClickListener onItemClickListener; // New listener interface
     private OnSwipeToDeleteListener onSwipeToDeleteListener; // New listener interface
+    private OnItemLongClickListener itemLongClickListener;// New listener interface
     RecyclerView.ViewHolder viewHolder;
     private int positionHolder;
+    boolean isInSelectionMode;
+
     Button PlayNow, PlayLater, EndLater;
+    List<Integer> selectedItems = new ArrayList<>();
+
 
 
     public interface OnDeleteClickListener {
         void onDeleteClick(int position);
+
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(int position);
+    }
+
+    public interface OnSwipeToDeleteListener {
+        void onItemSwiped(int position);
+
+    }
+    public interface OnItemLongClickListener {
+        void onItemLongClick(int position);
 
     }
     public void deleteItem(int position) {
@@ -49,14 +68,11 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
         notifyItemRemoved(position);
 
     }
-
-
-    public interface OnItemClickListener {
-        void onItemClick(int position);
-    }
-
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
+    }
+    public void setOnItemLongClickListener(MainActivity mainActivity) {
+        this.itemLongClickListener = mainActivity;
     }
 
 
@@ -67,10 +83,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
        this.context = context;
        this.onSwipeToDeleteListener = onSwipeToDeleteListener;
     }
-    public interface OnSwipeToDeleteListener {
-        void onItemSwiped(int position);
 
-    }
 
     @NonNull
     @Override
@@ -81,11 +94,13 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
 
     @Override
         public void onBindViewHolder( MusicListAdapter.ViewHolder holder, int position) {
-        Log.i("TAG", "onBindViewHolder: "  );
+
+        int positionholder = holder.getAdapterPosition();
+        AudioModel songData = songsList.get(position);
 
         Typeface typeface = Typeface.create(Typeface.MONOSPACE, Typeface.BOLD);
 
-            AudioModel songData = songsList.get(position);
+
             String truncatedTitle = truncateTitle(songData.getTitle(), 30);
 
             holder.titleTextView.setText(truncatedTitle);
@@ -110,20 +125,35 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
             ItemTouchHelper.SimpleCallback swipeToDeleteCallback = new SwipeToDeleteCallback( onSwipeToDeleteListener);
             new ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView((RecyclerView) holder.itemView.getParent());
             //Global positiion
-            positionHolder = position;
 
-            if(MyMediaPlayer.currentIndex==position){
-                holder.titleTextView.setTextColor(Color.parseColor("#E4AE44"));
+        positionholder = holder.getAdapterPosition();
+        //Log.i("TAG", "onBindViewHolder holder.getAdapterPosition(): " + positionholder );
+//SHOW HIGHLIGHTED tEXT FOR CURRENT SONG
+        if(MyMediaPlayer.currentIndex==positionholder){
+                holder.titleTextView.setTextColor(Color.parseColor("#C95C2B"));//SELECTEDSONG
             }else{
-                holder.titleTextView.setTextColor(Color.parseColor("#000000"));
+                holder.titleTextView.setTextColor(Color.parseColor("#000000"));//OTHER SONGS
             }
 
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
+
                 @Override
                 public void onClick(View v) {
-                    Log.i("TAG", "onBindViewHolder onClick: "  );
 
+                    Log.i("TAG", "onBindViewHolder onClick: "  );
+                    if(isInSelectionMode){
+                        int positionholder = holder.getAdapterPosition();
+                        Toast.makeText(context, "Item long clicked!", Toast.LENGTH_SHORT).show();
+                        if (selectedItems.contains(positionholder)) {
+                            selectedItems.remove(Integer.valueOf(positionholder)); // Deselect the item
+                        } else {
+                            selectedItems.add(positionholder); // Select the item
+                        }
+                        notifyItemChanged(positionholder); // Notify the adapter to update the view
+                        // Handle long click action here
+                        MusicStateSingleton.getInstance().setSelectedItems(selectedItems);
+                    }else
                     //navigate to another acitivty
                     if (!songsList.isEmpty()) {
                     MyMediaPlayer.getInstance().reset();
@@ -132,7 +162,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     MusicStateSingleton.getInstance().setMusicPlaying(false);
                         Log.i("TAG", "onBindViewHolder onClick:isMusicPlaying False "  );
 
-                        MyMediaPlayer.currentIndex = position;
+                        MyMediaPlayer.currentIndex = holder.getAdapterPosition();
                     Intent intent = new Intent(context,MusicPlayerActivity.class);
                     intent.putExtra("LIST",songsList);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -142,12 +172,48 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     // Handle the case when the list is empty
                     Toast.makeText(context, "no songs available", Toast.LENGTH_SHORT).show();
                 }
-
+            if(isInSelectionMode)     Log.d("TAG"," selectedItems" + selectedItems.toString());
 
                 }
             });
+        //This code does the highlighting on click
 
+        if (selectedItems.contains(position)) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#fafafa"));
+        } else {
+            holder.itemView.setBackgroundColor(Color.parseColor("#E3EFCC"));
         }
+// Inside onBindViewHolder
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                isInSelectionMode = true;
+                 int positionholder = holder.getAdapterPosition();
+               /* if (songData.isSelected()) {
+                    holder.itemView.setBackgroundColor(Color.parseColor("#fafafa"));
+                } else {
+                    holder.itemView.setBackgroundColor(Color.parseColor("#E3EFCC"));
+                }*/
+                selectedItems.add(positionholder);
+                MusicStateSingleton.getInstance().setSelectedItems(selectedItems);
+                if (itemLongClickListener != null) {
+                    itemLongClickListener.onItemLongClick(positionholder);
+                    Log.d("TAG"," itemLongClickListener ");
+                }
+                Toast.makeText(context, "Item long clicked!", Toast.LENGTH_SHORT).show();
+                /*AudioModel selectedSong = songsList.get(positionholder);
+                selectedSong.setIsSelected(!selectedSong.isSelected());*/
+
+                Log.d("TAG"," selectedItems" + selectedItems.toString());
+                    notifyItemChanged(positionholder); // Notify the adapter to update the view
+                    // Handle long click action here
+                    return true; // Return true to consume the long click event
+            }
+
+        });
+
+
+    }
     public Bitmap getAlbumArtBytesForSong(AudioModel song) {
         Log.i(getClass().toString(), "songuri" + song.getPath().toString());
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
