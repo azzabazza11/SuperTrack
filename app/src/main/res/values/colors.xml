@@ -14,6 +14,7 @@
     <color name="coffee">#87846f</color>
     <color name="colorPrimary">#3F51B5</color> <!-- Modify the colorPrimary value -->
     <color name="colorPrimaryDark">#303F9F</color> <!-- Modify the colorPrimaryDark value -->
-    <color name="colorAccent">#FF4081</color> <!-- Modify the colorAccent value -->
+    <color name="colorAccent">#FF4081</color>
+
 
 </resources>

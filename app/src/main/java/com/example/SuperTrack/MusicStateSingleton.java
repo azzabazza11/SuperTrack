@@ -1,5 +1,7 @@
 package com.example.SuperTrack;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +9,8 @@ public class MusicStateSingleton {
     private static MusicStateSingleton instance;
     private boolean isMusicPlaying;
     private boolean isFromMainactivity;
+
+    private boolean isInSelectionMode;
     private String currentSongTitle;
     private int currentPos;
 
@@ -74,6 +78,10 @@ public class MusicStateSingleton {
 
         this.selectedItems  = list;
     }
+    public void emptySelectedItemsList(){
+
+        this.selectedItems = new ArrayList<>();
+    }
     public String getDuration() {
         return duration;
     }
@@ -92,5 +100,13 @@ public class MusicStateSingleton {
     }
     public void setSonglist(ArrayList<AudioModel> list) {
         this.songlist = list; // Assign the parameter to the instance variable
+    }
+
+    public void setIsInSelectionMode(boolean b) {
+         Log.d("TAG", "setIsInSelectionMode: " + b );
+        this.isInSelectionMode = b;
+    }
+    public boolean isInSelectionMode() {
+        return isInSelectionMode;
     }
 }

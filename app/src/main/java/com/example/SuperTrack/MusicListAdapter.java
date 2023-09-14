@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
+
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -68,9 +69,9 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
         notifyItemRemoved(position);
 
     }
-    public void setOnItemClickListener(OnItemClickListener listener) {
+   /* public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
-    }
+    }*/
     public void setOnItemLongClickListener(MainActivity mainActivity) {
         this.itemLongClickListener = mainActivity;
     }
@@ -104,12 +105,21 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
             String truncatedTitle = truncateTitle(songData.getTitle(), 30);
 
             holder.titleTextView.setText(truncatedTitle);
-            holder.titleTextView.setText(songData.getTitle());
+            //holder.titleTextView.setText(songData.getTitle());
             holder.titleTextView.setTypeface(typeface);
 
             holder.durationTv.setText(holder.convertToMMSS(Long.parseLong(songData.getDuration())));
             holder.durationTv.setTypeface(typeface);
-
+            //update SELCTED ITEMS locally from Singleton
+            selectedItems = MusicStateSingleton.getInstance().getSelectedItems();
+            isInSelectionMode = MusicStateSingleton.getInstance().isInSelectionMode();
+        if (MusicStateSingleton.getInstance().getSelectedItems().contains(position)) {
+            // Set the background color for selected items
+            holder.itemView.setBackgroundColor(Color.parseColor("#fafafa"));
+        } else {
+            // Set the background color for non-selected items"#E3EFCC"
+            holder.itemView.setBackgroundColor(Color.parseColor("#fafafa"));
+        }
 
 
             Bitmap albumArtBitmap = getAlbumArtBytesForSong(songData); // Implement a method to get album art bytes
@@ -130,7 +140,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
         //Log.i("TAG", "onBindViewHolder holder.getAdapterPosition(): " + positionholder );
 //SHOW HIGHLIGHTED tEXT FOR CURRENT SONG
         if(MyMediaPlayer.currentIndex==positionholder){
-                holder.titleTextView.setTextColor(Color.parseColor("#C95C2B"));//SELECTEDSONG
+                holder.titleTextView.setTextColor(Color.parseColor("#C95C2B"));//CURRENTLYSELECTEDSONG
             }else{
                 holder.titleTextView.setTextColor(Color.parseColor("#000000"));//OTHER SONGS
             }
@@ -144,7 +154,7 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
                     Log.i("TAG", "onBindViewHolder onClick: "  );
                     if(isInSelectionMode){
                         int positionholder = holder.getAdapterPosition();
-                        Toast.makeText(context, "Item long clicked!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Item  clicked!", Toast.LENGTH_SHORT).show();
                         if (selectedItems.contains(positionholder)) {
                             selectedItems.remove(Integer.valueOf(positionholder)); // Deselect the item
                         } else {
@@ -176,24 +186,45 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
 
                 }
             });
-        //This code does the highlighting on click
 
-        if (selectedItems.contains(position)) {
+        //This code does the highlighting on click
+        Log.d("TAG"," is in selection mode  "+ isInSelectionMode);
+        if(isInSelectionMode){
+            if (selectedItems.contains(position)) {
+                //if is in selected items list
+                Log.d("TAG","  select on click ");
+                holder.itemView.setBackgroundColor(Color.parseColor("#E3EFCC"));
+            } else {
+                // if not in list
+                Log.d("TAG","  deselect on click ");
             holder.itemView.setBackgroundColor(Color.parseColor("#fafafa"));
-        } else {
-            holder.itemView.setBackgroundColor(Color.parseColor("#E3EFCC"));
+            }
         }
+
+
 // Inside onBindViewHolder
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                isInSelectionMode = true;
-                 int positionholder = holder.getAdapterPosition();
-               /* if (songData.isSelected()) {
-                    holder.itemView.setBackgroundColor(Color.parseColor("#fafafa"));
-                } else {
+
+                isInSelectionMode = !isInSelectionMode;
+                MusicStateSingleton.getInstance().setIsInSelectionMode(true);
+                Toast.makeText(context, " SELECTIONMODE " + isInSelectionMode, Toast.LENGTH_SHORT).show();
+
+
+
+
+
+                int positionholder = holder.getAdapterPosition();
+
+                Log.d("TAG"," onlongclick: is item Selected "+songData.isSelected());
+                if (songData.isSelected()) {
+                    Log.d("TAG"," deselect onlongclick ");
                     holder.itemView.setBackgroundColor(Color.parseColor("#E3EFCC"));
-                }*/
+                } else {
+                    Log.d("TAG"," select onlongclick ");
+                    holder.itemView.setBackgroundColor(Color.parseColor("#fafafa"));
+                }
                 selectedItems.add(positionholder);
                 MusicStateSingleton.getInstance().setSelectedItems(selectedItems);
                 if (itemLongClickListener != null) {

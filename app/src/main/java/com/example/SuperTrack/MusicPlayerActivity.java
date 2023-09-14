@@ -485,7 +485,12 @@ private void setupAnimation(){
     private BroadcastReceiver screenStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d("TAG", "BroadcastReceiver onReceive:");
+
+
             if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                Log.d("TAG", "ACTION_SCREEN_OFF");
+
                 // Device went to sleep or screen locked
                 // Start the CountdownService here
                 startService(new Intent(MusicPlayerActivity.this, CountdownService.class));
@@ -518,7 +523,9 @@ private void setupAnimation(){
         }
 
         wakeLock.acquire();
-            countdownHandler.postDelayed(new Runnable() {
+        Log.i("TAG"," wakeLock.acquire()");
+
+        countdownHandler.postDelayed(new Runnable() {
                 long remainingMillis = delayMillis;
 
                 @Override
