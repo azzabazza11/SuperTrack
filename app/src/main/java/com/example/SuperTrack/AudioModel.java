@@ -79,7 +79,7 @@ public class AudioModel implements Parcelable {
     }
     public void setGroupName(String name) {
 
-        Log.d("TAG","setGroupName"+  name);
+        Log.d("main","setGroupName"+  name);
 
         this.groupName = name;
     }

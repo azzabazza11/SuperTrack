@@ -33,8 +33,8 @@ public class CountdownService extends Service {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                Log.i("MusicPlayer","onReceive");
-                Log.i("MusicPlayer","Start Service");
+                Log.i("TAGCDS","BroadcastReceiver");
+                Log.i("TAGCDS","Start Service");
                 // Device went to sleep or screen locked
                 // Start the CountdownService here
             startService(intent);
@@ -53,7 +53,7 @@ public class CountdownService extends Service {
     }
 public void NotificationSetup(long remainingMillis){
     // Create a notification channel (required for Android Oreo and above)
-    Log.i("MusicPlayer","NotificationSetup");
+    Log.i("TAGCDS","NotificationSetup");
 
     // Inside NotificationSetup()
     builder = new NotificationCompat.Builder(this, "countdown_channel")
@@ -84,15 +84,15 @@ public void NotificationSetup(long remainingMillis){
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        Log.i("MusicPlayer","onStartCommand");
+        Log.i("TAGCDS","onStartCommand");
 
         if (intent != null && intent.getAction() != null) {
-            Log.i("MusicPlayer","intent != null && intent.getAction() != null");
+            Log.i("TAGCDS","intent != null && intent.getAction() != null");
 
             if (intent.getAction().equals("START_COUNTDOWN")) {
                 // Start the countdown with the provided delayMillis
                 long delayMillis = intent.getLongExtra("DELAY_MILLIS", 0);
-                Log.i("MusicPlayer","intent.getAction().equals(\"START_COUNTDOWN\"");
+                Log.i("TAGCDS","intent.getAction().equals(\"START_COUNTDOWN\"");
 
                 NotificationSetup(delayMillis);
                 //startCountdown(delayMillis);
@@ -112,7 +112,7 @@ public void NotificationSetup(long remainingMillis){
 
         @Override
         public void run() {
-            Log.i("MusicPlayer","countdownRunnable run() ");
+            Log.i("TAGCDS","countdownRunnable run() ");
 
             if (isCountingdown && remainingMillis > 0) {
                 // Update notification content text

@@ -188,15 +188,15 @@ public class MusicListAdapter extends RecyclerView.Adapter<MusicListAdapter.View
             });
 
         //This code does the highlighting on click
-        Log.d("TAG"," is in selection mode  "+ isInSelectionMode);
+        //Log.d("TAGMLA"," is in selection mode  "+ isInSelectionMode);
         if(isInSelectionMode){
             if (selectedItems.contains(position)) {
                 //if is in selected items list
-                Log.d("TAG","  select on click ");
+                Log.d("TAGMLA","  select on click ");
                 holder.itemView.setBackgroundColor(Color.parseColor("#E3EFCC"));
             } else {
                 // if not in list
-                Log.d("TAG","  deselect on click ");
+                Log.d("TAGMLA","  deselect on click ");
             holder.itemView.setBackgroundColor(Color.parseColor("#fafafa"));
             }
         }

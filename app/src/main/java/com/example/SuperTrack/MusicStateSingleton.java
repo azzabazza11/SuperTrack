@@ -12,6 +12,7 @@ public class MusicStateSingleton {
 
     private boolean isInSelectionMode;
     private String currentSongTitle;
+    private long delayMillis;
     private int currentPos;
 
     private int songListSize;
@@ -67,6 +68,15 @@ public class MusicStateSingleton {
     public void setCurrentPos(int pos) {
 
         currentPos = pos;
+    }
+
+    public long getDelayMillis() {
+        return delayMillis;
+    }
+
+    public void setDelayMillis(long delay) {
+
+        this.delayMillis = delay;
     }
 
     public  List<Integer> getSelectedItems() {

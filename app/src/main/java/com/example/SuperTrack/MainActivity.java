@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
     private MusicListAdapter adapter;
     RecyclerView recyclerView;
     TextView noMusicTextView;
+
+    Button selectTracksButton;
     ArrayList<AudioModel> songsList = new ArrayList<>();
     List<GroupModel> groupList = new ArrayList<>();
     View musicControlsView = null;
@@ -95,7 +97,16 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
 
         isMusicPlaying = MusicStateSingleton.getInstance().isMusicPlaying();
 
-        inflateMusicControls(isMusicPlaying);
+        adjustRecyclerview();
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                adjustRecyclerview();
+            }
+        });
+
+        //inflateMusicControls(isMusicPlaying);
 
         //SHOW LOG OF SONGLIST NAMES AND GROUPS
         logTrackInfo(songsList);
@@ -105,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
             return;
 
         }
-
+        adjustRecyclerview();
 
      /*   String[] projection = {
                 MediaStore.Audio.Media.TITLE,
@@ -264,7 +275,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
 
                 processSelectedUris(selectedUris);
                 populateSongsList(recyclerView);
-                inflateMusicControls(isMusicPlaying);
+                //inflateMusicControls(isMusicPlaying);
 
             }
         }
@@ -285,10 +296,10 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
         // Call the setupRecyclerView() function here
         setupRecyclerView();
 
-        Log.i("TAG", "isMusicPlaying: " + isMusicPlaying);
+
         isMusicPlaying = MusicStateSingleton.getInstance().isMusicPlaying();
-        Log.i("TAG", "isMusicPlaying: " + isMusicPlaying);
-        inflateMusicControls(isMusicPlaying);
+        Log.i("main", "isMusicPlaying: " + isMusicPlaying);
+        //inflateMusicControls(isMusicPlaying);
 
     }
 
@@ -302,6 +313,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
                 handleSelectedFile(uri);
             }
         }
+        MusicStateSingleton.getInstance().setSonglist(songsList);
     }
 
     private boolean isFolder(Uri uri) {
@@ -324,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
 
         AudioModel audioModel = new AudioModel(path, title, String.valueOf(duration),"default",false);
         songsList.add(audioModel);
-        Log.d("TAG","handleSelectedFile" + audioModel.makeString() );
+        Log.d("TAGSING","handleSelectedFile" + audioModel.makeString() );
     }
 
 
@@ -442,13 +454,12 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
         );
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM); // Align to the bottom
 
-        Log.i("TAG", "method called? " +methodCalled);
+        Log.i("TAGmain", "SELECTIONS method called previously? " +methodCalled);
 
         //adjustRecyclerview();
 
         // Find the selectTracksButton in your activity_main layout
-        Button selectTracksButton = findViewById(R.id.selectTracksButton);
-        if(isShowingAddTracks){selectTracksButton.setVisibility(View.INVISIBLE);}
+        hideAddTracksButton();
 
 
 
@@ -456,15 +467,23 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
             selectTrackOptionsView.setBackgroundResource(R.drawable.rounded_background);
             selectTrackOptionsView.setClipToOutline(true);
             // Initialize click listeners
-            initClickListeners(selectTrackOptionsView);
+            initClickListenersSelectOptions(selectTrackOptionsView);
+        Log.i("TAGmain", "before"  + (selectTrackOptionsView != null && musicControlsView !=null)); // added the music controls view");
 
             if(selectTrackOptionsView != null && musicControlsView !=null) {
-            switchViews(musicControlsView,selectTrackOptionsView);
-            }else container.addView(selectTrackOptionsView);
-            // Add the music controls view to the container
+                Log.i("TAGmain", "inflate music otpions() SWITCHVIEWS // added the music controls view");
+
+                switchViews(musicControlsView,selectTrackOptionsView);
+
+            }else {
+
+                container.addView(selectTrackOptionsView);
+                Log.i("TAGmain", "inflate music otpions() container.addView(musicControlsView) // added the music controls view");
+
+            }
+            // Add the music controls view to the container}
 
        // switchViews(musicControlsView,selectTrackOptionsView);
-            Log.i("TAG", "container.addView(musicControlsView) // added the music controls view");
 
             int buttonMarginFromTop = getResources().getDimensionPixelSize(R.dimen.button_margin_from_top);
 //CONRTOLS LAYOUT
@@ -493,9 +512,13 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
     }
 
 
+
+
     private void inflateMusicControls(boolean isMusicPlaying) {
-        Log.i("TAG", "inflateMusicControls");
-       // switchViews(selectTrackOptionsView,musicControlsView);
+        Log.i("TAGmain", "inflateMusicControls withmusicplaying? "+ isMusicPlaying );
+
+        // No controls while no music playing
+        if (!isMusicPlaying)return;
 
         if (selectTrackOptionsView != null) removeView(selectTrackOptionsView);
 
@@ -509,7 +532,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
                 RelativeLayout.LayoutParams.WRAP_CONTENT
         );
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM); // Align to the bottom
-        Log.i("TAG", "method called? " +methodCalled);
+        Log.i("TAGmain", "method called? " +methodCalled);
 
             if(isMusicPlaying)  adjustRecyclerview();
 
@@ -517,11 +540,11 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
         Button selectTracksButton = findViewById(R.id.selectTracksButton);
 
         MusicControlListener musicControlListener = new MusicPlayerActivity();
-        Log.i("TAG", "inflateMusicControls is music playing? " +isMusicPlaying);
+        Log.i("TAGmain", "inflateMusicControls is music playing? " +isMusicPlaying);
 
         // Check if music is playing
         if (isMusicPlaying) {
-            Log.i("TAG", "inflateMusicControls // Inflate the music controls view");
+            Log.i("TAGmain", "inflateMusicControls // Inflate the music controls view");
             isShowingControls = true;
             // Inflate the music controls view
             musicControlsView = inflater.inflate(R.layout.floating_controls_layout, container, false);
@@ -532,12 +555,18 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
 
             // Add the music controls view to the container
             //switchViews(selectTrackOptionsView,musicControlsView);
+            Log.i("TAGmain", "switchViews CHECK  both views not null"+ (selectTrackOptionsView != null && musicControlsView != null) );
+
+
+
             if (selectTrackOptionsView != null && musicControlsView != null) {
+
                 switchViews(selectTrackOptionsView,musicControlsView);
-            }else container.addView(musicControlsView);
+            }else {
+                container.addView(musicControlsView);
 
-            Log.i("TAG", "container.addView(musicControlsView) // added the music controls view");
-
+                Log.i("TAGmain", "container.addView(musicControlsView) // added the music controls view");
+            }
               int buttonMarginFromTop = getResources().getDimensionPixelSize(R.dimen.button_margin_from_top);
 //CONRTOLS LAYOUT
             RelativeLayout.LayoutParams controlLayoutParams = new RelativeLayout.LayoutParams(
@@ -565,49 +594,78 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
         }
 
 
-        Log.i("TAG", "deflate CHECK STATUS"+ (!isMusicPlaying && musicControlsView != null) );
-        Log.i("TAG", "deflate CHECK STATUS !isMusicPlaying               "+!isMusicPlaying);
-                Log.i("TAG", "deflate CHECK STATUS musicControlsView is Visible "+ (musicControlsView != null));
+        Log.i("TAGmain", "deflate CHECK STATUS "+ (!isMusicPlaying && musicControlsView != null) );
 
-        // Remove existing music controls view if it's not null
-        /*if (!isMusicPlaying && musicControlsView != null) {
-            Log.i("TAG", "removeView(musicControlsView) // deflate the music controls view");
+
+        // Remove existing music controls view if it's not null unless music is playing
+        if (!isMusicPlaying && musicControlsView != null) {
+            Log.i("TAGmain", "removing existing controls view) ");
 
 
             container.removeView(musicControlsView);
 
-        }*/
+        }else        Log.i("TAGmain", "None to remove " );
+
     }
 
-    private void    adjustRecyclerview( ) {
-        if (methodCalled ) {
+    private void adjustRecyclerview() {
+        if (methodCalled) {
             return; // Skip further execution
         }
-         Log.d("TAG","ADJUST RECYCLERVIEW");
-        // Find the RecyclerView and Controls View
+
+        Log.d("TAGmain", "ADJUST RECYCLERVIEW");
+
+        // Find the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-      //  View controlsView = findViewById(R.id.floatingConstraint); // Replace with your actual controls view ID
 
-// Calculate the height adjustment (90dp)
-        int marginFromBottom = getResources().getDimensionPixelSize(R.dimen.margin_from_bottom); // Replace with your dimension resource
+        // Find the musiccontrolview and selectionoptionview (replace with your actual view IDs)
+        View musicControlView = findViewById(R.id.controls_view);
+        View selectionOptionView = findViewById(R.id.selection_options);
 
-// Get the LayoutParams of the RecyclerView
-        //ViewGroup.LayoutParams recyclerViewLayoutParams = recyclerView.getLayoutParams();
+        // Check if musicControlView and selectionOptionView are not null
+        if (musicControlView != null && selectionOptionView != null) {
+            Log.d("TAGmain", "Check if musicControlView and selectionOptionView are not null");
+            // Calculate the height adjustment (90dp)
+            int marginFromBottom = getResources().getDimensionPixelSize(R.dimen.margin_from_bottom);
 
-// Adjust the height by adding the margin from the bottom
-        RecyclerView.LayoutParams recyclerViewLayoutParams = new RecyclerView.LayoutParams(
-                RecyclerView.LayoutParams.MATCH_PARENT, // Width is set to MATCH_PARENT
-                RecyclerView.LayoutParams.MATCH_PARENT  // Height is set to MATCH_PARENT
-        );
-        recyclerViewLayoutParams.height = recyclerView.getHeight() - marginFromBottom;
+            // Calculate the desired height of the RecyclerView
+            int desiredHeight = getWindow().getDecorView().getHeight() - marginFromBottom;
 
-// Apply the modified layout parameters
-        recyclerView.setLayoutParams(recyclerViewLayoutParams);
+            // Check if musiccontrolview is invisible
+            if (musicControlView.getVisibility() == View.INVISIBLE) {
+                Log.d("TAGmain", " musiccontrolview is invisible now View.GONE");
+                musicControlView.setVisibility(View.GONE); // Hide and remove from layout
+            }
+
+            // Check if selectionoptionview is invisible
+            if (selectionOptionView.getVisibility() == View.INVISIBLE) {
+                Log.d("TAGmain", "selectionoptionview is invisible now View.GONE");
+                selectionOptionView.setVisibility(View.GONE); // Hide and remove from layout
+            }
+
+            // If either musiccontrolview or selectionoptionview is visible, set the RecyclerView height to desiredHeight
+            if (musicControlView.getVisibility() == View.VISIBLE || selectionOptionView.getVisibility() == View.VISIBLE) {
+
+                recyclerView.getLayoutParams().height = desiredHeight;
+                Log.d("TAGmain", "either musiccontrolview or selectionoptionview is visible getting height: " + desiredHeight);
+            } else {
+                Log.d("TAGmain", "Both views are not visible, extend the RecyclerView to fill the parent height ");
+                // Both views are not visible, extend the RecyclerView to fill the parent height
+                recyclerView.getLayoutParams().height = RecyclerView.LayoutParams.MATCH_PARENT;
+            }
+
+            // Apply the modified layout parameters
+            recyclerView.requestLayout();
+        }
+
         methodCalled = true;
     }
 
-    private void initClickListeners(View selectTrackOptionsView) {
-        // FOR THE SELECTED ITEMS OPTIONS
+
+
+
+    private void initClickListenersSelectOptions(View selectTrackOptionsView) {
+        //        SELECTED ITEMS OPTIONS
         TextView groupTv = selectTrackOptionsView.findViewById(R.id.floation_group);
         TextView deleteTv = selectTrackOptionsView.findViewById(R.id.floating_delete);
         TextView cancelTv = selectTrackOptionsView.findViewById(R.id.floating_cancel);
@@ -616,7 +674,9 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
             @Override
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "Group Clicked", Toast.LENGTH_SHORT).show();
-               //GROUP NAME ET DIALOG
+                Log.d("TAGmain", "  groupTv.setOnClickListener onClick "  );
+
+                //GROUP NAME ET DIALOG
                 Dialog dialog = new Dialog(MainActivity.this);
                 dialog.setContentView(R.layout.group_name_dialog);
 
@@ -628,23 +688,25 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
                     @Override
                     public void onClick(View v) {
                         // Handle the group creation here
-                        Log.d("TAG"," btnCreateGroup.setOnClickListener public void onClick(View v) {" );
+                        Log.d("TAGmain"," btnCreateGroup.setOnClickListener public void onClick(View v) {" );
 
                         String groupName = etGroupName.getText().toString();
 
                         if (!groupName.isEmpty()) {
-                            Log.d("TAG"," !groupName.isEmpty()" );
+                         //   Log.d("TAG"," !groupName.isEmpty()" );
 
                             List<Integer> selectedItems = MusicStateSingleton.getInstance().getSelectedItems();
 
                             Toast.makeText(getApplicationContext(), "Creating group", Toast.LENGTH_SHORT).show();
-                            Log.d("TAG"," Selected valuse ");
-                            Log.d("TAG", "songsList.size() = " + songsList.size());
+
+                            Log.d("TAGmain", "songsList.size() = " + songsList.size());
                             Iterator<Integer> iterator = selectedItems.iterator();
+                            Log.d("TAGmain", "ITERATOR IN ");
+
                             while (iterator.hasNext()) {
                                 Integer position = iterator.next();
 
-                                Log.d("TAG", "position = " + position);
+                                Log.d("TAGmain", "position = " + position);
 
 
                                 if (position >= 0 && position < songsList.size()) {
@@ -653,23 +715,30 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
 
                                     // Update the groupName property to your desired group name
                                     selectedAudio.setGroupName(groupName); // Replace with the actual group name
-                                    Log.d("TAG", "Audiomodel to string" + selectedAudio.makeString());
+                                    Log.d("TAGmain", "Audiomodel to string" + selectedAudio.makeString());
 
                                     songsList.set(position, selectedAudio);
 
                                     // Optionally, update any other properties of the selectedAudio if needed
                                 }
                             }
+                            Log.d("TAGmain", "ITERATOR OUT ");
 
                             dialog.dismiss(); // Dismiss the dialog after group creation
                             switchViews(selectTrackOptionsView,musicControlsView);
-
+                            adjustRecyclerview();
                             logTrackInfo(songsList); // show log track info
                             //isShowingAddTracks =false;
 
                             MusicStateSingleton.getInstance().setIsInSelectionMode(false);
+
+                            MusicStateSingleton.getInstance().emptySelectedItemsList();
+                            adapter.notifyDataSetChanged();
                             Button selectTracksButton = findViewById(R.id.selectTracksButton);
-                            //if(isShowingAddTracks){selectTracksButton.setVisibility(View.VISIBLE);}
+                            Log.d("TAGmain", "isShowingAddTracks = " + isShowingAddTracks);
+
+                            if(!isShowingAddTracks){selectTracksButton.setVisibility(View.VISIBLE);
+                            isShowingAddTracks = true;}
 
                         } else {
                             Toast.makeText(getApplicationContext(), "Group name cannot be empty", Toast.LENGTH_SHORT).show();
@@ -688,12 +757,13 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
                 Toast.makeText(getApplicationContext(), "deleteTv", Toast.LENGTH_SHORT).show();
                 // Handle the delete action here
                 List<Integer> selectedItems = MusicStateSingleton.getInstance().getSelectedItems();
+                Log.d("TAGmain", "  deleteTv.setOnClickListener onClick "  );
 
                 Iterator<Integer> iterator = selectedItems.iterator();
                 while (iterator.hasNext()) {
                     Integer position = iterator.next();
 
-                    Log.d("TAG", "position = " + position);
+                    Log.d("TAGmain", "position = " + position);
 
                     if (position >= 0 && position < songsList.size()) {
                         // Remove the corresponding item from the songsList
@@ -705,10 +775,16 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
                         // Optionally, update any other properties of the selectedAudio if needed
                     }
                 }
-
+                MusicStateSingleton.getInstance().setSonglist(songsList);
                 // Notify your RecyclerView adapter that the data has changed
+                switchViews(selectTrackOptionsView,musicControlsView);
+                adjustRecyclerview();
                 adapter.notifyDataSetChanged();
                 MusicStateSingleton.getInstance().setIsInSelectionMode(false);
+                Button selectTracksButton = findViewById(R.id.selectTracksButton);
+                Log.d("TAGmain", "isShowingAddTracks = " + isShowingAddTracks);
+                if(!isShowingAddTracks){selectTracksButton.setVisibility(View.VISIBLE);
+                    isShowingAddTracks = true;}
             }
         });
         cancelTv.setOnClickListener(new View.OnClickListener() {
@@ -716,14 +792,26 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(), "cancelTv", Toast.LENGTH_SHORT).show();
                 // Check if selectTrackOptionsView and musicControlsView are not null before switching views
-                if (selectTrackOptionsView != null && musicControlsView != null) {
-                    Log.d("TAG", "  cancelTv.setOnClickListener onClick SWITCH VIEW "  );
+                Log.d("TAGmain", "  cancelTv.onClick() "  );
+                removeView(selectTrackOptionsView);
+                if (musicControlsView != null) {
+                    Log.d("TAGmain", "switching views"  );
                     switchViews(
                             selectTrackOptionsView,
                             musicControlsView
                     );
-                }else inflateMusicControls(isMusicPlaying);
-                Log.d("TAG", "  cancelTv.setOnClickListener onClick "  );
+
+                }else {
+                    Log.d("TAGmain", "  inflating MusicControls "  );
+
+                    inflateMusicControls(isMusicPlaying);
+
+                }
+                addFloatingTracksButton();
+                Log.d("TAGmain", "  cancelTv.setOnClickListener onClick "  );
+
+
+
                 MusicStateSingleton.getInstance().setIsInSelectionMode(false);
                 MusicStateSingleton.getInstance().emptySelectedItemsList();
                 adapter.notifyDataSetChanged();
@@ -733,8 +821,19 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
 
     }
 
+    private void addFloatingTracksButton() {
+        selectTracksButton = findViewById(R.id.selectTracksButton);
+        if(isShowingAddTracks){selectTracksButton.setVisibility(View.VISIBLE);}
+    }
+    private void hideAddTracksButton() {
+        selectTracksButton = findViewById(R.id.selectTracksButton);
+        if(isShowingAddTracks){selectTracksButton.setVisibility(View.INVISIBLE);}
+
+    }
 
     private void initClickListeners(View musicControlsView, MusicControlListener musicControlListener, boolean isMusicPlaying) {
+      //MUSIC CONTROLS
+
         ImageView playPauseButton = musicControlsView.findViewById(R.id.floatingpause_play);
         ImageView nextButton = musicControlsView.findViewById(R.id.floatingnext);
         ImageView previousButton = musicControlsView.findViewById(R.id.floatingprevious);
@@ -749,7 +848,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
                     playPauseButton.setImageResource(R.drawable.ic_baseline_pause_circle_outline_24);
                 }
 
-                Log.i("TAG", "playPauseButton ");
+                Log.i("TAGmain", "playPauseButton ");
                 MusicStateSingleton.getInstance().setIsFromMainactivity(true);
                 if (musicControlListener != null) {
                     musicControlListener.pausePlay();
@@ -761,16 +860,16 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
         nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("TAG", "nextButton ");
+                Log.i("TAGmain", "nextButton ");
                 MusicStateSingleton.getInstance().setIsFromMainactivity(true);
                 Boolean flag = MusicStateSingleton.getInstance().isFromMainactivity();
                 /*ArrayList<AudioModel> songlist;
                 AudioModel audioModel = musicControlListener.getcurrentsong();*/
-                Log.i("TAG", "musicControlListener.getcurrentsong() ");
+                Log.i("TAGmain", "musicControlListener.getcurrentsong() ");
                 //String path = audioModel.getPath();
                 if (musicControlListener != null) {
                     musicControlListener.PlayNextSong(flag);
-                    Log.i("TAG", "PlayNextSong ");
+                    Log.i("TAGmain", "PlayNextSong ");
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -779,7 +878,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
         previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("TAG", "previousButton ");
+                Log.i("TAGmain", "previousButton ");
                 MusicStateSingleton.getInstance().setIsFromMainactivity(true);
                 Boolean flag = MusicStateSingleton.getInstance().isFromMainactivity();
                 if (musicControlListener != null) {
@@ -797,7 +896,7 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
                 String trackName = track.getTitle();
                 String groupName = track.getGroupName(); // Assuming you have a method to get the group name from AudioModel
 
-                Log.d("TAG", "Position: " + i + ", Track: " + trackName + ", Group: " + groupName);
+                Log.d("TAGmain", "Position: " + i + ", Track: " + trackName + ", Group: " + groupName);
             }
         }
     }
@@ -805,20 +904,33 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
 
     private void switchViews(View oldView, View newView) {
         // Remove the first view from the container, if it exists
-        Log.d("TAG", "  switchViews  "  );
+        Log.d("TAGmain", "  switchViews()  "  );
 
 
-            if (containerLayout.indexOfChild(oldView) != -1) {
+            if (containerLayout.indexOfChild(oldView) != -1 && oldView != null) {
                 containerLayout.removeView(oldView);
+                Log.d("TAGmain", "  old view removed  "  );
+
             }
              // Add the second view to the container
-        containerLayout.addView(newView);
+        if (newView !=null ){
+            containerLayout.addView(newView);
+            Log.d("TAGmain", "  newView added  "  );
 
+        }else {
+            inflateMusicControls(false);
+            Log.d("TAGmain", "  inflateMusicControls called  "  );
+        }
+        Log.d("TAGmain", " SwitchView OUT  "  );
     }
     private void removeView(View firstView ) {
+        Log.d("TAGmain", " removeView index=  " + containerLayout.indexOfChild(firstView)  );
         // Remove the first view from the container, if it exists
         if (containerLayout.indexOfChild(firstView) != -1) {
+
             containerLayout.removeView(firstView);
+            Log.d("TAGmain", " View  Removed     "  );
+
         }
 
         // Add the second view to the container
@@ -830,14 +942,14 @@ public class MainActivity extends AppCompatActivity implements   MusicListAdapte
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i("TAG", "onPause ");
+        Log.i("TAGmain", "onPause SAVING SONGLIST ");
         saveSongsListToSharedPreferences();
     }
     @Override
     protected void onResume() {
         super.onResume();
 
-        Log.i("TAG", "onResume ");
+        Log.i("TAGmain", "onResume ");
 
         if (adapter != null) {
             adapter.notifyDataSetChanged();

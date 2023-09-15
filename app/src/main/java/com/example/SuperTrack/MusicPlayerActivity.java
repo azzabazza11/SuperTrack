@@ -40,6 +40,7 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.annotations.Since;
 
 public class MusicPlayerActivity extends AppCompatActivity implements MainActivity.MusicControlListener {
     // Implement the methods from the interface here
@@ -103,9 +104,9 @@ public class MusicPlayerActivity extends AppCompatActivity implements MainActivi
         // Close the dialog
         // Set up the countdown on the MusicPlayerActivity
         MusicStateSingleton.getInstance().setSonglist(songsList);
-        Log.i("TAG", "MusicStateSingleton.getInstance().setSonglist(songsList);" + songsList.toString());
+        Log.i("TAGMPA ", "MusicStateSingleton.getInstance().setSonglist(songsList);" + songsList.toString());
 
-        Log.i("TAG", "MusicStateSingleton.getInstance().getSonglist();" + MusicStateSingleton.getInstance().getArraySonglist().toString());
+        Log.i("TAGMPA ", "MusicStateSingleton.getInstance().getSonglist();" + MusicStateSingleton.getInstance().getArraySonglist().toString());
 
         MainActivity.MusicControlListener musicControlListener = this;
 
@@ -382,16 +383,19 @@ private void setupAnimation(){
                                             isCountingdown = true;
                                             isStartingLater = true;
                                             alertDialog.dismiss();
+                                            Log.d("TAGMPA", "COUNTDOWN SERVICE :::::");
 
-                                            Intent serviceIntent = new Intent(getApplicationContext(), CountdownService.class);
+                                            /*Intent serviceIntent = new Intent(getApplicationContext(), CountdownService.class);
                                             serviceIntent.setAction("START_COUNTDOWN");
                                             serviceIntent.putExtra("DELAY_MILLIS", delayMillis);
                                             serviceIntent.putExtra("ISLater", isStartingLater);
                                             serviceIntent.putExtra("ISCountingDown", isCountingdown);
 
                                             startService(serviceIntent);
+                                             */
 
                                             commenceCountdown(delayMillis);
+
                                         } else {
                                             Toast.makeText(MusicPlayerActivity.this, "Please select a valid duration", Toast.LENGTH_SHORT).show();
                                         }
@@ -485,15 +489,24 @@ private void setupAnimation(){
     private BroadcastReceiver screenStateReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d("TAG", "BroadcastReceiver onReceive:");
+            Log.d("TAGMPA", "BroadcastReceiver onReceive:");
 
 
             if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
-                Log.d("TAG", "ACTION_SCREEN_OFF");
 
                 // Device went to sleep or screen locked
                 // Start the CountdownService here
-                startService(new Intent(MusicPlayerActivity.this, CountdownService.class));
+               // startService(new Intent(MusicPlayerActivity.this, CountdownService.class));
+                long delayMillis = MusicStateSingleton.getInstance().getDelayMillis();
+                Log.d("TAGMPA", "ACTION_SCREEN_OFF -starting countdown service" + delayMillis);
+
+                Intent serviceIntent = new Intent(getApplicationContext(), CountdownService.class);
+                serviceIntent.setAction("START_COUNTDOWN");
+                serviceIntent.putExtra("DELAY_MILLIS", delayMillis);
+                serviceIntent.putExtra("ISLater", isStartingLater);
+                serviceIntent.putExtra("ISCountingDown", isCountingdown);
+                context.startService(serviceIntent);
+
             }
         }
     };
@@ -502,7 +515,7 @@ private void setupAnimation(){
 
     private void commenceCountdown(long delayMillis) {
         Log.i("MusicPlayer", "commenceCountdown isCountingdown:" + isCountingdown);
-
+        MusicStateSingleton.getInstance().setDelayMillis(delayMillis);
 
         if (isCountingdown) {
             String delayFormatted = convertToMMSS(String.valueOf(delayMillis));
